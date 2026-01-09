@@ -137,16 +137,28 @@ export default function Signup() {
       });
 
       if (signUpError) {
-        if (signUpError.message.includes('already registered')) {
-          setError('This email is already registered. Please login or use a different email.');
-          setShowResendVerification(true);
+        // For security, don't reveal if email already exists
+        // Show same success message and silently trigger resend
+        if (signUpError.message.includes('already registered') || signUpError.code === 'user_already_exists') {
+          // Silently attempt to resend verification email
+          try {
+            await supabase.auth.resend({
+              type: 'signup',
+              email: formData.email,
+            });
+          } catch (resendErr) {
+            // Silently ignore resend errors
+          }
+          setSuccess(true);
+          return;
         } else {
           setError(signUpError.message);
+          return;
         }
-        return;
       }
 
-      if (data.user && !data.user.confirmed_at) {
+      // Send welcome email for new signups
+      if (data.user) {
         try {
           await fetch('/api/send-welcome-email', {
             method: 'POST',
@@ -163,9 +175,11 @@ export default function Signup() {
           console.error('Welcome email error:', emailError);
         }
 
-        setSuccess(true);
-      } else if (data.user && data.user.confirmed_at) {
-        router.push('/dashboard');
+        if (data.user.confirmed_at) {
+          router.push('/dashboard');
+        } else {
+          setSuccess(true);
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
