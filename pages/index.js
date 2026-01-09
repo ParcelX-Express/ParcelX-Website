@@ -44,6 +44,7 @@ const NavItem = ({ title, options }) => {
 export default function Home() {
   const [trackingNumber, setTrackingNumber] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const menuItems = [
     { 
@@ -75,11 +76,38 @@ export default function Home() {
               <button className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Sign Up</button>
               <button className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Log In</button>
             </div>
-            <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className={`p-1.5 rounded-full transition-colors flex items-center justify-center ${isProfileOpen ? 'bg-white/20' : 'hover:bg-white/10'}`}
+              >
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                </div>
+              </button>
+
+              {/* Profile Dropdown */}
+              {isProfileOpen && (
+                <div className="absolute right-0 mt-3 w-72 bg-white rounded-lg shadow-2xl py-2 z-[70] text-gray-800 animate-in fade-in zoom-in duration-200">
+                  <div className="px-6 py-4 border-b border-gray-100">
+                    <button className="text-[#007AB7] font-bold text-sm uppercase hover:underline">SIGN UP / LOG IN</button>
+                  </div>
+                  <div className="py-2">
+                    {['My profile', 'Administrative tools', 'Email preferences', 'Address book', 'View & pay bill', 'Reporting'].map((item) => (
+                      <button key={item} className="w-full text-left px-6 py-3 text-sm hover:bg-gray-50 transition-colors">{item}</button>
+                    ))}
+                  </div>
+                  <div className="px-6 py-4 bg-gray-50 mt-2">
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                      <button className="text-[#007AB7] underline font-bold">Open an account</button> to save on shipping costs, time-saving tools and more!
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 hover:bg-white/10 rounded-lg transition-colors z-[60]"
@@ -238,44 +266,172 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Keep existing sections below but with refined styling */}
+        {/* Built for the Future Section */}
         <section className="py-24 bg-gray-50 border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
             <div className="flex-1">
-              <img 
-                src="/warehouse.jpg" 
-                alt="Logistics" 
-                className="rounded-3xl shadow-xl"
-              />
+              <div className="aspect-video bg-gray-200 rounded-3xl shadow-xl flex items-center justify-center overflow-hidden relative group">
+                <img 
+                  src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" 
+                  alt="Logistics" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
             </div>
             <div className="flex-1">
-              <h2 className="text-4xl font-black text-brand-blue mb-6">Built for the Future of Commerce</h2>
+              <h2 className="text-4xl font-black text-brand-blue mb-6 leading-tight">Global Infrastructure, <br/>Local Expertise</h2>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                ParcelX integrates legacy logistics with modern digital infrastructure. Our platform gives you total control over your global footprint.
+                ParcelX operates one of the world's most sophisticated logistics networks. From automated sorting facilities to carbon-neutral last-mile delivery, we're redefining how the world moves.
               </p>
-              <button className="bg-brand-blue text-white px-10 py-4 rounded-xl font-bold hover:bg-brand-orange transition-all">
-                PARTNER WITH US
+              <button className="bg-brand-blue text-white px-10 py-4 rounded-xl font-bold hover:bg-brand-orange transition-all shadow-lg hover:shadow-brand-orange/20">
+                LEARN ABOUT OUR NETWORK
               </button>
             </div>
           </div>
         </section>
+
+        {/* New Solutions Section */}
+        <section className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            <h2 className="text-4xl font-black text-brand-blue mb-16 text-center">Custom Solutions for Every Business</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  title: 'E-commerce',
+                  desc: 'Scale your online store with seamless integrations and global fulfillment centers.',
+                  icon: 'M16 11V7a4 4 0 11-8 0v4M5 9h14l1 12H4L5 9z'
+                },
+                {
+                  title: 'Healthcare',
+                  desc: 'Temperature-controlled shipping for sensitive medical supplies and pharmaceuticals.',
+                  icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
+                },
+                {
+                  title: 'Aerospace',
+                  desc: 'Precision logistics for high-value components and urgent AOG requirements.',
+                  icon: 'M12 19l9 2-9-18-9 18 9-2zm0 0v-8'
+                }
+              ].map((item) => (
+                <div key={item.title} className="p-8 border border-gray-100 rounded-3xl hover:border-brand-orange transition-all hover:shadow-2xl hover:-translate-y-2 group">
+                  <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-orange transition-colors">
+                    <svg className="w-6 h-6 text-brand-blue group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-brand-blue mb-4">{item.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Sustainability Section */}
+        <section className="py-24 bg-brand-blue text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10">
+             <svg className="w-full h-full" viewBox="0 0 100 100" fill="currentColor">
+                <path d="M50 0L100 50L50 100L0 50Z" />
+             </svg>
+          </div>
+          <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 flex flex-col md:flex-row items-center gap-16">
+            <div className="flex-1">
+              <span className="text-brand-orange font-bold tracking-widest text-sm uppercase mb-4 block">Sustainability</span>
+              <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">Committed to <br/>Net Zero by 2040</h2>
+              <p className="text-lg text-white/70 mb-10 leading-relaxed">
+                We're electrifying our global delivery fleet and investing in sustainable aviation fuels to ensure our growth doesn't come at the cost of the planet.
+              </p>
+              <button className="bg-white text-brand-blue px-10 py-4 rounded-xl font-bold hover:bg-brand-orange hover:text-white transition-all">
+                OUR PROGRESS REPORT
+              </button>
+            </div>
+            <div className="flex-1 w-full">
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'Electric Vehicles', value: '10k+' },
+                  { label: 'Renewable Energy', value: '100%' },
+                  { label: 'Trees Planted', value: '1M+' },
+                  { label: 'Carbon Offset', value: '500k t' }
+                ].map((stat) => (
+                  <div key={stat.label} className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+                    <div className="text-3xl font-black text-brand-orange mb-1">{stat.value}</div>
+                    <div className="text-xs text-white/50 uppercase font-bold tracking-wider">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Global Network Map Mockup */}
+        <section className="py-24 bg-gray-50">
+           <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
+              <h2 className="text-4xl font-black text-brand-blue mb-6">Our Global Footprint</h2>
+              <p className="text-lg text-gray-500 mb-16 max-w-2xl mx-auto">
+                Connecting 220+ countries and territories through 650+ aircraft and 200,000+ motorized vehicles.
+              </p>
+              <div className="relative aspect-[21/9] bg-white rounded-[40px] shadow-2xl overflow-hidden border border-gray-100">
+                <div className="absolute inset-0 opacity-40">
+                  <img src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&q=80&w=2000" className="w-full h-full object-cover" alt="World Map" />
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                   <div className="p-8 bg-brand-blue/90 backdrop-blur-md rounded-3xl text-white max-w-sm shadow-2xl">
+                      <div className="text-brand-orange font-black text-2xl mb-2">Real-time Network</div>
+                      <p className="text-sm text-white/70 mb-6">Experience our logistics network in action through our interactive live-tracking globe.</p>
+                      <button className="w-full py-3 bg-white text-brand-blue font-bold rounded-xl hover:bg-brand-orange hover:text-white transition-all">LAUNCH EXPLORER</button>
+                   </div>
+                </div>
+              </div>
+           </div>
+        </section>
       </main>
 
-      <footer className="bg-brand-blue text-white py-20 px-4 border-t border-white/10">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex justify-center items-center gap-3 mb-10">
-            <span className="text-3xl font-black tracking-tighter uppercase">PARCEL<span className="text-brand-orange">X</span></span>
+      <footer className="bg-brand-blue text-white pt-24 pb-12 px-4 border-t border-white/10">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20 text-center md:text-left">
+            <div className="md:col-span-1">
+              <Link href="/" className="inline-block mb-6">
+                <span className="text-3xl font-black tracking-tighter">PARCEL<span className="text-brand-orange">X</span></span>
+              </Link>
+              <p className="text-white/40 text-sm leading-relaxed mb-8">
+                Leading the global logistics revolution with technology, passion, and reliability since 2026.
+              </p>
+              <div className="flex justify-center md:justify-start gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-orange transition-colors cursor-pointer group">
+                    <div className="w-4 h-4 bg-white/40 group-hover:bg-white rounded-sm transition-colors"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {[
+              { title: 'Company', links: ['About Us', 'Careers', 'Sustainability', 'Newsroom', 'Investor Relations'] },
+              { title: 'Support', links: ['Customer Support', 'Tracking Tools', 'Shipping Rates', 'Claims', 'Global Contact'] },
+              { title: 'Services', links: ['E-commerce', 'Healthcare', 'Small Business', 'Supply Chain', 'Customs Clearance'] }
+            ].map((col) => (
+              <div key={col.title}>
+                <h4 className="text-xs font-black uppercase tracking-widest text-brand-orange mb-8">{col.title}</h4>
+                <ul className="space-y-4">
+                  {col.links.map((link) => (
+                    <li key={link}>
+                      <Link href="#" className="text-white/60 hover:text-white text-sm transition-colors">{link}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-          <p className="text-white/40 mb-10 text-sm max-w-md mx-auto">
-            Leading the global logistics revolution with technology, passion, and reliability.
-          </p>
-          <div className="flex justify-center gap-12 text-sm font-bold text-white/60 mb-12">
-            <Link href="#" className="hover:text-brand-orange">Legal</Link>
-            <Link href="#" className="hover:text-brand-orange">Security</Link>
-            <Link href="#" className="hover:text-brand-orange">Privacy</Link>
-          </div>
-          <div className="pt-12 border-t border-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-white/20">
-            © 2026 ParcelX Global Systems. All rights reserved.
+
+          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">
+              © 2026 ParcelX Global Systems. All rights reserved.
+            </div>
+            <div className="flex gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+              <Link href="#" className="hover:text-brand-orange">Legal</Link>
+              <Link href="#" className="hover:text-brand-orange">Security</Link>
+              <Link href="#" className="hover:text-brand-orange">Privacy</Link>
+              <Link href="#" className="hover:text-brand-orange">Cookies</Link>
+            </div>
           </div>
         </div>
       </footer>
