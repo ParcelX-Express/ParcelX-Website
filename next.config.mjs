@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  devIndicators: {
-    buildActivity: false,
-  },
   serverExternalPackages: ['pg'],
   // Replit proxy support
   async headers() {
