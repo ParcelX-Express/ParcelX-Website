@@ -55,6 +55,10 @@ export default function Home() {
     {
       image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=2000",
       title: "Global Logistics Redefined"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1506784919140-507245dd934c?auto=format&fit=crop&q=80&w=2000",
+      title: "Fast & Reliable Delivery"
     }
   ];
 
@@ -86,9 +90,9 @@ export default function Home() {
       {/* FedEx Style Header */}
       <header className="bg-brand-blue text-white sticky top-0 z-50">
         {/* Scrolling Welcome Bar */}
-        <div className="bg-brand-orange py-1 overflow-hidden whitespace-nowrap">
-          <div className="inline-block animate-marquee font-bold text-xs uppercase tracking-widest px-4">
-            Welcome to ParcelX - Global Logistics Redefined • Ship Now and Save 15% • 24/7 Support Available • Track Your Shipments in Real-time • Welcome to ParcelX - Global Logistics Redefined • Ship Now and Save 15% • 24/7 Support Available • Track Your Shipments in Real-time
+        <div className="bg-brand-blue py-1 overflow-hidden whitespace-nowrap border-b border-white/10">
+          <div className="inline-block animate-marquee font-bold text-xs uppercase tracking-widest px-4 text-brand-orange">
+            Welcome to ParcelX Express • Global Logistics Redefined • Ship Now and Save 15% • 24/7 Support Available • Track Your Shipments in Real-time • Welcome to ParcelX Express • Global Logistics Redefined • Ship Now and Save 15% • 24/7 Support Available • Track Your Shipments in Real-time
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex justify-between items-center">
@@ -511,7 +515,7 @@ export default function Home() {
                 </ul>
               </div>
               <div className="flex-1">
-                <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=1000" alt="Secure Logistics Team" className="rounded-3xl shadow-2xl" />
+                <img src="https://images.unsplash.com/photo-1570710891163-6d3b5c47248b?auto=format&fit=crop&q=80&w=1000" alt="Ship and Aircraft Delivery" className="rounded-3xl shadow-2xl" />
               </div>
             </div>
           </div>
