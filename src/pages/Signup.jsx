@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -7,7 +8,6 @@ const Signup = () => {
 
   const handleSignup = (e) => {
     e.preventDefault();
-    // TODO: Call backend API for signup
     console.log('Signing up', name, email, password);
   };
 
@@ -42,6 +42,9 @@ const Signup = () => {
         <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
           Sign Up
         </button>
+        <p className="mt-4 text-center text-gray-600">
+          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
+        </p>
       </form>
     </div>
   );
