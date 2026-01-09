@@ -96,41 +96,64 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Mobile Slide-out Menu */}
-        <div className={`fixed inset-0 bg-white text-gray-900 transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          {/* Menu Header with Search and X */}
-          <div className="bg-brand-blue p-4 flex flex-col gap-4 relative">
-             <div className="flex justify-between items-center pr-12">
-                <Link href="/" className="text-2xl font-black tracking-tighter text-white">
-                  PARCEL<span className="text-brand-orange">X</span>
-                </Link>
-             </div>
-             <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="Search or Tracking Numbers"
-                  className="w-full bg-white/10 border border-white/20 rounded text-white py-3 pl-4 pr-12 placeholder:text-white/50 outline-none focus:bg-white/20"
-                />
-                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        {/* Mobile Dropdown Modal */}
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-brand-blue/60 backdrop-blur-sm"
+              onClick={() => setIsMenuOpen(false)}
+            ></div>
+            
+            {/* Modal Content */}
+            <div className="relative bg-white w-full max-w-lg max-h-[90vh] overflow-hidden rounded-xl shadow-2xl flex flex-col">
+              {/* Modal Header */}
+              <div className="bg-brand-blue p-4 flex flex-col gap-4 relative">
+                <button 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="absolute right-4 top-4 text-white hover:text-brand-orange transition-colors z-[110]"
+                  aria-label="Close Menu"
+                >
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
+                
+                <div className="flex items-center">
+                  <span className="text-2xl font-black tracking-tighter text-white">
+                    PARCEL<span className="text-brand-orange">X</span>
+                  </span>
+                </div>
+                
+                <div className="relative mt-2">
+                  <input 
+                    type="text" 
+                    placeholder="Search or Tracking Numbers"
+                    className="w-full bg-white/10 border border-white/20 rounded text-white py-3 pl-4 pr-12 placeholder:text-white/50 outline-none focus:bg-white/20"
+                  />
+                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-          </div>
 
-          <div className="flex-grow overflow-y-auto">
-            <div className="p-6 border-b border-gray-100 flex gap-4">
-              <button className="flex-grow bg-brand-orange text-white py-3 font-bold uppercase text-sm hover:bg-orange-600 transition-colors shadow-sm">Sign Up</button>
-              <button className="flex-grow border-2 border-brand-blue text-brand-blue py-3 font-bold uppercase text-sm hover:bg-gray-50 transition-colors">Log In</button>
-            </div>
-            <div className="py-2">
-              {menuItems.map((item, index) => (
-                <NavItem key={index} title={item.title} options={item.options} />
-              ))}
+              {/* Modal Body */}
+              <div className="flex-grow overflow-y-auto">
+                <div className="p-6 border-b border-gray-100 flex gap-4">
+                  <button className="flex-grow bg-brand-orange text-white py-3 font-bold uppercase text-sm hover:bg-orange-600 transition-colors shadow-sm">Sign Up</button>
+                  <button className="flex-grow border-2 border-brand-blue text-brand-blue py-3 font-bold uppercase text-sm hover:bg-gray-50 transition-colors">Log In</button>
+                </div>
+                <div className="py-2">
+                  {menuItems.map((item, index) => (
+                    <NavItem key={index} title={item.title} options={item.options} />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </header>
 
       <main className="flex-grow">
