@@ -362,6 +362,51 @@ export default function Home() {
           </div>
         </section>
 
+        {/* New Logistics in Action Section */}
+        <section className="py-24 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            <div className="flex flex-col md:flex-row items-center gap-16">
+              <div className="flex-1 space-y-8">
+                <h2 className="text-4xl font-black text-brand-blue leading-tight">Delivering Excellence, <br/>One Parcel at a Time</h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  Our dedicated team ensures your shipments are handled with precision and care. From the moment we pick up your package to the final delivery, we leverage advanced tracking and logistics technology to keep your business moving forward.
+                </p>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="border-l-4 border-brand-orange pl-6">
+                    <div className="text-2xl font-black text-brand-blue">Reliable</div>
+                    <p className="text-sm text-gray-500">Industry-leading on-time delivery rates.</p>
+                  </div>
+                  <div className="border-l-4 border-brand-orange pl-6">
+                    <div className="text-2xl font-black text-brand-blue">Global</div>
+                    <p className="text-sm text-gray-500">Spanning 220+ countries and territories.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
+                    <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 1" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <div className="aspect-square rounded-3xl overflow-hidden shadow-xl">
+                    <img src="https://images.unsplash.com/photo-1590601448391-686212cb84b6?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 2" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                  </div>
+                </div>
+                <div className="pt-12 space-y-4">
+                  <div className="aspect-square rounded-3xl overflow-hidden shadow-xl">
+                    <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 3" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl bg-brand-orange flex items-center justify-center p-8 text-white text-center">
+                    <div className="space-y-4">
+                      <div className="text-4xl font-black">24/7</div>
+                      <div className="text-sm font-bold uppercase tracking-widest">Support & Monitoring</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Global Network Map Mockup */}
         <section className="py-24 bg-gray-50">
            <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
