@@ -63,8 +63,19 @@ ParcelX is a global shipping and delivery platform with real-time tracking. This
 ## Environment Variables Required
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `BREVO_API_KEY` - Brevo API key for transactional emails
+- `BREVO_SENDER` - Sender email address for Brevo
+- `BREVO_SENDER_NAME` - Sender name for Brevo emails
+
+## Email Integration
+- **Provider**: Brevo (formerly Sendinblue)
+- **API Route**: `/api/send-welcome-email` - Sends professional welcome email on signup
+- **Template**: Custom HTML template with ParcelX branding
 
 ## Recent Changes
+- 2026-01-09: Added Brevo email integration for professional welcome emails
+- 2026-01-09: Enhanced signup form with additional fields (first name, last name, country, address, phone)
+- 2026-01-09: Added loading spinner and success message to signup page
 - 2026-01-09: Added profile menu pages (profile, admin-tools, email-preferences, address-book, billing, reporting)
 - 2026-01-09: Updated navigation links to point to login/signup pages
 - 2026-01-09: Added Supabase authentication to login and signup pages
