@@ -55,6 +55,10 @@ export default function Home() {
     {
       image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=2000",
       title: "Global Logistics Redefined"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=2000",
+      title: "Reliable Shipping Solutions"
     }
   ];
 
@@ -434,7 +438,7 @@ export default function Home() {
                   <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" alt="Modern Logistics" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl group border border-gray-100">
-                  <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Reliable Delivery" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
+                  <img src="https://images.unsplash.com/photo-1539220482118-95a21e37512a?auto=format&fit=crop&q=80&w=1000" alt="Reliable Delivery" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl group border border-gray-100">
                   <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=1000" alt="Global Shipping" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
@@ -490,7 +494,7 @@ export default function Home() {
                 </ul>
               </div>
               <div className="flex-1">
-                <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Courier Delivery" className="rounded-3xl shadow-2xl" />
+                <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1000" alt="Courier Delivery" className="rounded-3xl shadow-2xl" />
               </div>
             </div>
 
