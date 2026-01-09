@@ -9,11 +9,16 @@ export default {
     extend: {
       animation: {
         'slow-zoom': 'slow-zoom 20s ease-in-out infinite',
+        marquee: 'marquee 25s linear infinite',
       },
       keyframes: {
         'slow-zoom': {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.1)' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
       },
       colors: {

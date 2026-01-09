@@ -85,6 +85,12 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-white text-gray-900 leading-normal font-sans">
       {/* FedEx Style Header */}
       <header className="bg-brand-blue text-white sticky top-0 z-50">
+        {/* Scrolling Welcome Bar */}
+        <div className="bg-brand-orange py-1 overflow-hidden whitespace-nowrap">
+          <div className="inline-block animate-marquee font-bold text-xs uppercase tracking-widest px-4">
+            Welcome to ParcelX - Global Logistics Redefined • Ship Now and Save 15% • 24/7 Support Available • Track Your Shipments in Real-time • Welcome to ParcelX - Global Logistics Redefined • Ship Now and Save 15% • 24/7 Support Available • Track Your Shipments in Real-time
+          </div>
+        </div>
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-3xl font-black tracking-tight">PARCEL<span className="text-brand-orange text-4xl">X</span></span>
@@ -432,9 +438,6 @@ export default function Home() {
               <div className="flex-1 space-y-12">
                 <div className="rounded-3xl overflow-hidden shadow-2xl group border border-gray-100">
                   <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" alt="Modern Logistics" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="rounded-3xl overflow-hidden shadow-2xl group border border-gray-100">
-                  <img src="https://images.unsplash.com/photo-1539220482118-95a21e37512a?auto=format&fit=crop&q=80&w=1000" alt="Reliable Delivery" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl group border border-gray-100">
                   <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=1000" alt="Global Shipping" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
