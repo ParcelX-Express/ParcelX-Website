@@ -300,8 +300,8 @@ export default function Home() {
             <div className="flex-1">
               <div className="aspect-video bg-gray-200 rounded-3xl shadow-xl flex items-center justify-center overflow-hidden relative group">
                 <img 
-                  src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=1000" 
-                  alt="Global Logistics" 
+                  src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&q=80&w=1000" 
+                  alt="Logistics Technology" 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
@@ -390,40 +390,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Global Marine Logistics Section */}
-        <section className="py-24 bg-gray-50 border-t border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <div className="flex flex-col md:flex-row items-center gap-16">
-              <div className="flex-1 order-2 md:order-1">
-                <div className="rounded-3xl overflow-hidden shadow-2xl">
-                  <img 
-                    src="https://images.unsplash.com/photo-1544441893-675973e31d85?auto=format&fit=crop&q=80&w=1000" 
-                    alt="Cargo Ship at Sea" 
-                    className="w-full h-[500px] object-cover"
-                  />
-                </div>
-              </div>
-              <div className="flex-1 order-1 md:order-2">
-                <span className="text-brand-orange font-bold uppercase tracking-widest text-sm">Ocean Freight</span>
-                <h2 className="text-4xl font-black text-brand-blue mt-4 mb-6">Global Marine Logistics</h2>
-                <p className="text-lg text-gray-600 leading-relaxed mb-8">
-                  Our maritime network spans the globe, utilizing the world's most efficient shipping routes to transport heavy cargo across continents with precision and reliability.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex-1 min-w-[200px]">
-                    <div className="text-2xl font-black text-brand-blue">1,200+</div>
-                    <div className="text-sm text-gray-500 font-bold uppercase tracking-wider">Vessels Tracked</div>
-                  </div>
-                  <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex-1 min-w-[200px]">
-                    <div className="text-2xl font-black text-brand-blue">800+</div>
-                    <div className="text-sm text-gray-500 font-bold uppercase tracking-wider">Global Ports</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Loading & Distribution Section */}
         <section className="py-24 bg-white overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -431,7 +397,7 @@ export default function Home() {
               <div className="flex-1">
                 <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
                   <img 
-                    src="https://images.unsplash.com/photo-1545648580-5a3d46338b29?auto=format&fit=crop&q=80&w=1000" 
+                    src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&q=80&w=1000" 
                     alt="Workers loading truck" 
                     className="w-full h-[500px] object-cover"
                   />
@@ -503,6 +469,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
           </div>
         </section>
 
