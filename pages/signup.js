@@ -57,6 +57,9 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showResendVerification, setShowResendVerification] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -78,6 +81,28 @@ export default function Signup() {
     }
   };
 
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    setResendMessage('');
+    
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: formData.email,
+      });
+      
+      if (error) {
+        setResendMessage('Failed to resend verification email. Please try again.');
+      } else {
+        setResendMessage('Verification email sent! Please check your inbox.');
+      }
+    } catch (err) {
+      setResendMessage('An error occurred. Please try again.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     
@@ -88,6 +113,7 @@ export default function Signup() {
 
     setLoading(true);
     setError('');
+    setShowResendVerification(false);
 
     try {
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
@@ -111,30 +137,16 @@ export default function Signup() {
       });
 
       if (signUpError) {
-        setError(signUpError.message);
+        if (signUpError.message.includes('already registered')) {
+          setError('This email is already registered. Please login or use a different email.');
+          setShowResendVerification(true);
+        } else {
+          setError(signUpError.message);
+        }
         return;
       }
 
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: data.user.id,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            full_name: fullName,
-            email: formData.email,
-            country: formData.country,
-            contact_address: formData.contactAddress,
-            country_code: formData.countryCode,
-            phone_number: formattedPhone,
-            receive_updates: formData.receiveUpdates,
-          });
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-        }
-
+      if (data.user && !data.user.confirmed_at) {
         try {
           await fetch('/api/send-welcome-email', {
             method: 'POST',
@@ -152,6 +164,8 @@ export default function Signup() {
         }
 
         setSuccess(true);
+      } else if (data.user && data.user.confirmed_at) {
+        router.push('/dashboard');
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
@@ -182,14 +196,28 @@ export default function Signup() {
               Please check your inbox and click the confirmation link to activate your account.
             </p>
             <p className="text-sm text-gray-500 mb-8">
-              Don't see the email? Check your spam folder or request a new verification email.
+              Don't see the email? Check your spam folder or click below to resend.
             </p>
-            <Link 
-              href="/login" 
-              className="inline-block bg-brand-orange text-white px-8 py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors"
-            >
-              Go to Login
-            </Link>
+            <div className="space-y-4">
+              <button
+                onClick={handleResendVerification}
+                disabled={resendLoading}
+                className="w-full bg-gray-100 text-brand-blue px-8 py-3 rounded-lg font-bold hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+              </button>
+              {resendMessage && (
+                <p className={`text-sm ${resendMessage.includes('sent') ? 'text-green-600' : 'text-red-600'}`}>
+                  {resendMessage}
+                </p>
+              )}
+              <Link 
+                href="/login" 
+                className="inline-block w-full bg-brand-orange text-white px-8 py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors"
+              >
+                Go to Login
+              </Link>
+            </div>
           </div>
         </main>
       </div>
@@ -214,6 +242,22 @@ export default function Signup() {
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
               {error}
+              {showResendVerification && (
+                <div className="mt-3">
+                  <button
+                    onClick={handleResendVerification}
+                    disabled={resendLoading}
+                    className="text-brand-blue font-bold hover:underline"
+                  >
+                    {resendLoading ? 'Sending...' : 'Resend verification email'}
+                  </button>
+                  {resendMessage && (
+                    <p className={`mt-2 ${resendMessage.includes('sent') ? 'text-green-600' : 'text-red-600'}`}>
+                      {resendMessage}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
