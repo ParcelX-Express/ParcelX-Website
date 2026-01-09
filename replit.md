@@ -1,27 +1,34 @@
 # ParcelX Website
 
 ## Overview
-ParcelX is a global shipping and delivery platform with real-time tracking. This is a React-based frontend application.
+ParcelX is a global shipping and delivery platform with real-time tracking. This is a Next.js application with Supabase authentication.
 
 ## Project Architecture
-- **Framework**: React 18 with Vite
+- **Framework**: Next.js 16 with Pages Router
 - **Styling**: TailwindCSS
-- **Routing**: React Router DOM v6
+- **Authentication**: Supabase Auth
+- **Database**: Supabase (PostgreSQL)
 
 ## Project Structure
 ```
 /
+├── pages/
+│   ├── _app.js           # App wrapper with global styles
+│   ├── index.js          # Landing page
+│   ├── login.js          # User login with Supabase auth
+│   ├── signup.js         # User registration with Supabase auth
+│   ├── dashboard.js      # Shipment dashboard
+│   ├── track-shipment.js # Shipment tracking
+│   ├── create-shipment.js
+│   ├── shipping-rates.js
+│   ├── schedule-pickups.js
+│   └── shipping-supplies.js
+├── lib/
+│   └── supabase.js       # Supabase client configuration
 ├── src/
-│   ├── main.jsx          # Application entry point
-│   ├── index.css         # Tailwind CSS imports
-│   └── pages/
-│       ├── Home.jsx       # Landing page
-│       ├── Login.jsx      # User login
-│       ├── Signup.jsx     # User registration
-│       ├── Dashboard.jsx  # Shipment dashboard
-│       └── TrackShipment.jsx  # Shipment tracking
-├── index.html            # HTML template
-├── vite.config.js        # Vite configuration
+│   └── index.css         # Tailwind CSS imports
+├── public/               # Static assets
+├── next.config.mjs       # Next.js configuration
 ├── tailwind.config.js    # Tailwind configuration
 ├── postcss.config.js     # PostCSS configuration
 └── package.json          # Dependencies
@@ -32,11 +39,27 @@ ParcelX is a global shipping and delivery platform with real-time tracking. This
 - Build: `npm run build`
 
 ## Routes
-- `/` - Home page
-- `/login` - Login page
-- `/signup` - Registration page
+- `/` - Home page with hero slider and tracking input
+- `/login` - Login page with Supabase auth
+- `/signup` - Registration page with Supabase auth
 - `/dashboard` - User dashboard
 - `/track-shipment` - Shipment tracking
+- `/create-shipment` - Create new shipment
+- `/shipping-rates` - View shipping rates
+- `/schedule-pickups` - Schedule pickups
+- `/shipping-supplies` - Order shipping supplies
+
+## Database Schema
+- `profiles` - User profile data linked to Supabase auth
+- `shipments` - Shipment records with tracking
+- `tracking_updates` - History of shipment status updates
+
+## Environment Variables Required
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
 
 ## Recent Changes
-- 2026-01-09: Initial setup - restructured project for Vite/React environment
+- 2026-01-09: Added Supabase authentication to login and signup pages
+- 2026-01-09: Created Supabase client configuration
+- 2026-01-09: Fixed syntax errors and added allowedDevOrigins for Replit
+- 2026-01-09: Initial setup - restructured project for Next.js environment
