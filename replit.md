@@ -48,6 +48,12 @@ ParcelX is a global shipping and delivery platform with real-time tracking. This
 - `/shipping-rates` - View shipping rates
 - `/schedule-pickups` - Schedule pickups
 - `/shipping-supplies` - Order shipping supplies
+- `/profile` - User profile (requires auth)
+- `/admin-tools` - Administrative tools
+- `/email-preferences` - Email notification settings
+- `/address-book` - Saved addresses
+- `/billing` - View and pay bills
+- `/reporting` - Shipping reports and analytics
 
 ## Database Schema
 - `profiles` - User profile data linked to Supabase auth
@@ -59,6 +65,8 @@ ParcelX is a global shipping and delivery platform with real-time tracking. This
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
 
 ## Recent Changes
+- 2026-01-09: Added profile menu pages (profile, admin-tools, email-preferences, address-book, billing, reporting)
+- 2026-01-09: Updated navigation links to point to login/signup pages
 - 2026-01-09: Added Supabase authentication to login and signup pages
 - 2026-01-09: Created Supabase client configuration
 - 2026-01-09: Fixed syntax errors and added allowedDevOrigins for Replit

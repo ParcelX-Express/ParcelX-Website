@@ -102,8 +102,8 @@ export default function Home() {
           
           <div className="flex items-center gap-4 md:gap-6">
             <div className="hidden lg:flex items-center gap-4 border-r border-white/20 pr-6 mr-2">
-              <button className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Sign Up</button>
-              <button className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Log In</button>
+              <Link href="/signup" className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Sign Up</Link>
+              <Link href="/login" className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Log In</Link>
             </div>
             <div className="relative">
               <button 
@@ -121,7 +121,7 @@ export default function Home() {
               {isProfileOpen && (
                 <div className="absolute right-0 mt-3 w-72 bg-white rounded-lg shadow-2xl py-2 z-[70] text-gray-800 animate-in fade-in zoom-in duration-200 border border-gray-100">
                   <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                    <button className="text-[#007AB7] font-bold text-sm uppercase hover:underline">SIGN UP / LOG IN</button>
+                    <Link href="/login" className="text-[#007AB7] font-bold text-sm uppercase hover:underline">SIGN UP / LOG IN</Link>
                     <button 
                       onClick={() => setIsProfileOpen(false)}
                       className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -132,13 +132,20 @@ export default function Home() {
                     </button>
                   </div>
                   <div className="py-2">
-                    {['My profile', 'Administrative tools', 'Email preferences', 'Address book', 'View & pay bill', 'Reporting'].map((item) => (
-                      <button key={item} className="w-full text-left px-6 py-3 text-sm hover:bg-gray-50 transition-colors">{item}</button>
+                    {[
+                      { label: 'My profile', href: '/profile' },
+                      { label: 'Administrative tools', href: '/admin-tools' },
+                      { label: 'Email preferences', href: '/email-preferences' },
+                      { label: 'Address book', href: '/address-book' },
+                      { label: 'View & pay bill', href: '/billing' },
+                      { label: 'Reporting', href: '/reporting' }
+                    ].map((item) => (
+                      <Link key={item.label} href={item.href} className="block w-full text-left px-6 py-3 text-sm hover:bg-gray-50 transition-colors">{item.label}</Link>
                     ))}
                   </div>
                   <div className="px-6 py-4 bg-gray-50/80 mt-2">
                     <p className="text-xs text-gray-500 leading-relaxed">
-                      <button className="text-[#007AB7] underline font-bold">Open an account</button> to save on shipping costs, time-saving tools and more!
+                      <Link href="/signup" className="text-[#007AB7] underline font-bold">Open an account</Link> to save on shipping costs, time-saving tools and more!
                     </p>
                   </div>
                 </div>
@@ -207,8 +214,8 @@ export default function Home() {
               {/* Modal Body */}
               <div className="flex-grow overflow-y-auto">
                 <div className="p-6 border-b border-gray-100 flex gap-4">
-                  <button className="flex-grow bg-brand-orange text-white py-3 font-bold uppercase text-sm hover:bg-orange-600 transition-colors shadow-sm">Sign Up</button>
-                  <button className="flex-grow border-2 border-brand-blue text-brand-blue py-3 font-bold uppercase text-sm hover:bg-gray-50 transition-colors">Log In</button>
+                  <Link href="/signup" className="flex-grow bg-brand-orange text-white py-3 font-bold uppercase text-sm hover:bg-orange-600 transition-colors shadow-sm text-center">Sign Up</Link>
+                  <Link href="/login" className="flex-grow border-2 border-brand-blue text-brand-blue py-3 font-bold uppercase text-sm hover:bg-gray-50 transition-colors text-center">Log In</Link>
                 </div>
                 <div className="py-2">
                   {menuItems.map((item, index) => (
