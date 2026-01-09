@@ -1,8 +1,53 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
+const NavItem = ({ title, options }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border-b border-gray-100">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex justify-between items-center py-5 px-6 text-gray-800 hover:bg-gray-50 transition-colors group"
+      >
+        <span className="text-lg font-medium">{title}</span>
+        <svg
+          className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {isOpen && options && (
+        <div className="bg-gray-50 py-2">
+          {options.map((option, idx) => (
+            <Link
+              key={idx}
+              href="#"
+              className="block py-3 px-10 text-gray-600 hover:text-brand-blue hover:bg-gray-100 transition-colors"
+            >
+              {option}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function Home() {
   const [trackingNumber, setTrackingNumber] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const menuItems = [
+    { title: 'Shipping', options: ['Create a Shipment', 'Shipping Rates & Delivery Times', 'Schedule & Manage Pickups', 'Packing & Shipping Supplies'] },
+    { title: 'Tracking', options: ['Track a Shipment', 'Advanced Shipment Tracking', 'Manage Your Delivery'] },
+    { title: 'Design & Print', options: ['Business Cards', 'Flyers', 'Signs & Banners', 'Posters'] },
+    { title: 'Locations', options: ['Find a Location', 'Drop off a Package', 'In-Store Services'] },
+    { title: 'Support', options: ['Customer Support', 'File a Claim', 'Frequently Asked Questions'] },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900 leading-normal font-sans">
@@ -14,16 +59,48 @@ export default function Home() {
           </Link>
           
           <div className="flex items-center gap-6">
-            <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
+            <button className="p-2 hover:bg-white/10 rounded-full transition-colors hidden md:block">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </button>
-            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors z-50"
+            >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                )}
               </svg>
             </button>
+          </div>
+        </div>
+
+        {/* Mobile Slide-out Menu */}
+        <div className={`fixed inset-0 bg-white text-gray-900 transform transition-transform duration-300 ease-in-out z-40 pt-16 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+          <div className="flex flex-col h-full overflow-y-auto">
+            <div className="p-4 bg-brand-blue">
+              <div className="relative">
+                <input 
+                  type="text" 
+                  placeholder="Search or Tracking Numbers"
+                  className="w-full bg-white/10 border border-white/20 rounded text-white py-3 pl-4 pr-12 placeholder:text-white/50 outline-none focus:bg-white/20"
+                />
+                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="flex-grow">
+              {menuItems.map((item, index) => (
+                <NavItem key={index} title={item.title} options={item.options} />
+              ))}
+            </div>
           </div>
         </div>
       </header>
