@@ -34,43 +34,47 @@ export default function Home() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative h-[700px] flex items-center overflow-hidden">
+        <section className="relative h-[800px] flex items-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
-              src="/cargo-ship.jpg" 
-              alt="Global Shipping" 
-              className="w-full h-full object-cover brightness-[0.4]"
+              src="/shipping-port.jpg" 
+              alt="Global Shipping Port" 
+              className="w-full h-full object-cover brightness-[0.3] scale-105 animate-slow-zoom"
             />
           </div>
           <div className="relative z-10 max-w-7xl mx-auto px-4 lg:px-8 w-full">
-            <div className="max-w-2xl text-white">
-              <div className="inline-block bg-brand-orange/20 backdrop-blur-sm border border-brand-orange/30 text-brand-orange px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
-                Now Operating in 200+ Countries
+            <div className="max-w-3xl text-white">
+              <div className="inline-flex items-center gap-2 bg-brand-orange text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 shadow-xl shadow-orange-500/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                Global Network Live
               </div>
-              <h2 className="text-5xl md:text-7xl font-black mb-8 leading-[1.1]">
-                THE WORLD IS <br /><span className="text-brand-orange">CONNECTED</span>
+              <h2 className="text-6xl md:text-8xl font-black mb-8 leading-[0.95] tracking-tighter">
+                REDEFINING <br />THE <span className="text-brand-orange">HORIZON</span>
               </h2>
-              <p className="text-xl text-gray-300 mb-10 font-medium leading-relaxed max-w-xl">
-                Global logistics solutions for the modern world. We move your business forward with precision, speed, and reliability.
+              <p className="text-xl text-gray-300 mb-12 font-medium leading-relaxed max-w-2xl border-l-4 border-brand-orange pl-8">
+                ParcelX is the backbone of global commerce. We provide high-performance logistics solutions that empower businesses to scale across borders with absolute certainty.
               </p>
               
               {/* Quick Tracking Tool */}
-              <div className="bg-white/10 backdrop-blur-md p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row gap-2 max-w-xl border border-white/10">
-                <div className="flex-grow flex items-center bg-white rounded-xl px-4">
-                  <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <div className="bg-white/5 backdrop-blur-xl p-3 rounded-[2.5rem] shadow-2xl flex flex-col sm:flex-row gap-3 max-w-2xl border border-white/10 group focus-within:border-brand-orange/50 transition-all duration-500">
+                <div className="flex-grow flex items-center bg-white rounded-[2rem] px-6 shadow-inner">
+                  <svg className="w-6 h-6 text-brand-blue/30 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                   <input
                     type="text"
-                    placeholder="Enter Tracking ID..."
+                    placeholder="Enter Tracking Identifier..."
                     value={trackingNumber}
                     onChange={(e) => setTrackingNumber(e.target.value)}
-                    className="w-full py-4 text-brand-blue font-bold outline-none placeholder:text-gray-400 bg-transparent"
+                    className="w-full py-5 text-brand-blue font-bold outline-none placeholder:text-gray-400 bg-transparent text-lg"
                   />
                 </div>
                 <Link 
                   href={`/track-shipment?id=${trackingNumber}`}
-                  className="bg-brand-orange text-white px-10 py-4 rounded-xl font-black hover:bg-orange-600 transition-all text-center uppercase tracking-widest text-sm shadow-lg hover:shadow-orange-500/40"
+                  className="bg-brand-orange text-white px-12 py-5 rounded-[2rem] font-black hover:bg-white hover:text-brand-blue transition-all text-center uppercase tracking-widest text-sm shadow-xl hover:shadow-2xl active:scale-95"
                 >
-                  TRACK
+                  TRACK NOW
                 </Link>
               </div>
             </div>
@@ -78,104 +82,118 @@ export default function Home() {
         </section>
 
         {/* Feature Sections */}
-        <section className="py-24 bg-brand-gray-light">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 transform hover:-translate-y-2 transition-all">
-                <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                </div>
-                <h3 className="text-2xl font-bold text-brand-blue mb-4">Express Freight</h3>
-                <p className="text-brand-gray-dark leading-relaxed">Fast and secure transportation for your urgent shipments via air and sea routes.</p>
+        <section className="py-32 bg-[#F8FAFC]">
+          <div className="max-w-7xl mx-auto px-4 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+              <div className="max-w-2xl">
+                <h3 className="text-brand-orange font-black uppercase tracking-[0.3em] text-xs mb-4">Our Expertise</h3>
+                <h4 className="text-4xl md:text-5xl font-black text-brand-blue leading-tight">World-Class Logistics <br />At Your Fingertips</h4>
               </div>
-              <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 transform hover:-translate-y-2 transition-all">
-                <div className="w-16 h-16 bg-brand-orange/10 rounded-2xl flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+              <p className="text-brand-gray-dark/60 font-medium max-w-xs text-right hidden md:block">Leveraging cutting-edge technology to streamline your supply chain.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="group bg-white p-12 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-700 border border-gray-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 rounded-bl-[100%] transition-all duration-700 group-hover:scale-150 group-hover:bg-brand-blue/10"></div>
+                <div className="w-20 h-20 bg-brand-blue text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg group-hover:rotate-12 transition-transform duration-500">
+                  <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-blue mb-4">Global Warehousing</h3>
-                <p className="text-brand-gray-dark leading-relaxed">Strategic storage solutions across our global network of high-tech distribution centers.</p>
+                <h5 className="text-2xl font-black text-brand-blue mb-4">Priority Freight</h5>
+                <p className="text-brand-gray-dark/70 leading-relaxed font-medium">Ultra-fast transit for critical cargo across all global corridors.</p>
               </div>
-              <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 transform hover:-translate-y-2 transition-all">
-                <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04kM12 21.355r-.343-.133a11.97 11.97 0 01-6.107-6.107L5.414 15l.133-.343a11.97 11.97 0 016.107-6.107l.343.133a11.97 11.97 0 016.107 6.107l.133.343a11.97 11.97 0 01-6.107 6.107z"></path></svg>
+              <div className="group bg-brand-blue p-12 rounded-[3rem] shadow-2xl transition-all duration-700 relative overflow-hidden transform md:-translate-y-8">
+                <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-tl-[100%]"></div>
+                <div className="w-20 h-20 bg-brand-orange text-white rounded-2xl flex items-center justify-center mb-10 shadow-lg group-hover:-rotate-12 transition-transform duration-500">
+                  <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-blue mb-4">Secure Delivery</h3>
-                <p className="text-brand-gray-dark leading-relaxed">Real-time monitoring and insurance for every package, ensuring safe arrival.</p>
+                <h5 className="text-2xl font-black text-white mb-4">Smart Warehousing</h5>
+                <p className="text-gray-400 leading-relaxed font-medium">Fully automated storage solutions with real-time inventory precision.</p>
+              </div>
+              <div className="group bg-white p-12 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-700 border border-gray-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 rounded-bl-[100%] transition-all duration-700 group-hover:scale-150 group-hover:bg-brand-orange/10"></div>
+                <div className="w-20 h-20 bg-white border-2 border-brand-blue text-brand-blue rounded-2xl flex items-center justify-center mb-10 shadow-lg group-hover:rotate-12 transition-transform duration-500">
+                  <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04kM12 21.355r-.343-.133a11.97 11.97 0 01-6.107-6.107L5.414 15l.133-.343a11.97 11.97 0 016.107-6.107l.343.133a11.97 11.97 0 016.107 6.107l.133.343a11.97 11.97 0 01-6.107 6.107z"></path></svg>
+                </div>
+                <h5 className="text-2xl font-black text-brand-blue mb-4">Secure Logistics</h5>
+                <p className="text-brand-gray-dark/70 leading-relaxed font-medium">Military-grade protection and tracking for high-value shipments.</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Detailed Hero Section 2 */}
-        <section className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-16">
-            <div className="flex-1">
+        <section className="py-32 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col md:flex-row items-center gap-24">
+            <div className="flex-1 relative">
+              <div className="absolute -top-10 -left-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl"></div>
               <img 
-                src="/warehouse.jpg" 
-                alt="Logistics" 
-                className="rounded-[40px] shadow-2xl"
+                src="/delivery-service.jpg" 
+                alt="Professional Delivery Service" 
+                className="rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.25)] relative z-10 scale-105"
               />
+              <div className="absolute -bottom-12 -right-12 bg-white p-8 rounded-[2rem] shadow-2xl z-20 hidden lg:block">
+                <p className="text-brand-blue font-black text-4xl mb-1">100%</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-brand-orange">Delivery Guarantee</p>
+              </div>
             </div>
             <div className="flex-1">
-              <h2 className="text-4xl font-black text-brand-blue mb-6 leading-tight">
-                Enterprise Logistics for <br />the Digital Age
+              <h3 className="text-brand-orange font-black uppercase tracking-[0.3em] text-xs mb-6">Our Infrastructure</h3>
+              <h2 className="text-5xl font-black text-brand-blue mb-8 leading-tight">
+                Built for the <br />Future of Commerce
               </h2>
-              <p className="text-lg text-brand-gray-dark mb-8 leading-relaxed">
-                From small parcels to full container loads, ParcelX provides the infrastructure and technology to scale your supply chain globally. Our AI-driven routing ensures your cargo reaches its destination via the most efficient path.
+              <p className="text-xl text-brand-gray-dark/80 mb-10 leading-relaxed font-medium">
+                ParcelX integrates legacy logistics with modern digital infrastructure. Our platform gives you total control over your global footprint, from a single parcel to enterprise-scale supply chains.
               </p>
-              <ul className="space-y-4 mb-10">
-                <li className="flex items-center gap-3 font-bold text-brand-blue">
-                  <svg className="w-6 h-6 text-brand-orange" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
-                  200+ Countries Covered
-                </li>
-                <li className="flex items-center gap-3 font-bold text-brand-blue">
-                  <svg className="w-6 h-6 text-brand-orange" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
-                  24/7 Global Support
-                </li>
-                <li className="flex items-center gap-3 font-bold text-brand-blue">
-                  <svg className="w-6 h-6 text-brand-orange" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
-                  End-to-End Visibility
-                </li>
-              </ul>
-              <button className="bg-brand-blue text-white px-10 py-4 rounded-xl font-bold hover:bg-brand-blue/90 transition-all shadow-lg">
-                Explore Our Network
+              <div className="grid grid-cols-2 gap-8 mb-12">
+                <div className="space-y-2">
+                  <div className="w-12 h-1 bg-brand-orange"></div>
+                  <h4 className="font-black text-brand-blue text-lg">AI-Optimized</h4>
+                  <p className="text-sm text-brand-gray-dark/60">Predictive routing for maximum speed.</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="w-12 h-1 bg-brand-orange"></div>
+                  <h4 className="font-black text-brand-blue text-lg">Global Reach</h4>
+                  <p className="text-sm text-brand-gray-dark/60">Connected to 200+ countries.</p>
+                </div>
+              </div>
+              <button className="bg-brand-blue text-white px-12 py-5 rounded-2xl font-black hover:bg-brand-orange transition-all shadow-xl shadow-brand-blue/20">
+                PARTNER WITH US
               </button>
             </div>
           </div>
         </section>
 
         {/* Detailed Hero Section 3 */}
-        <section className="py-24 bg-brand-blue text-white overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10">
-            <svg viewBox="0 0 100 100" fill="white"><circle cx="50" cy="50" r="50"></circle></svg>
-          </div>
-          <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-16 relative z-10">
+        <section className="py-40 bg-brand-blue text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-[50%] h-full bg-white/[0.02] -skew-x-12 translate-x-1/2"></div>
+          <div className="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col md:flex-row items-center gap-24 relative z-10">
             <div className="flex-1">
-              <h2 className="text-4xl font-black mb-6 leading-tight">
-                The Smartest Way to <br />Ship Locally
+              <h3 className="text-brand-orange font-black uppercase tracking-[0.3em] text-xs mb-6">Sustainability</h3>
+              <h2 className="text-5xl font-black mb-8 leading-tight">
+                Eco-Conscious <br />Global Delivery
               </h2>
-              <p className="text-lg text-gray-300 mb-8 leading-relaxed">
-                Our last-mile delivery network uses electric vehicles and optimized routing to reduce your carbon footprint while guaranteeing same-day delivery in major metropolitan areas.
+              <p className="text-xl text-gray-400 mb-12 leading-relaxed font-medium">
+                We're pioneering the transition to carbon-neutral logistics. Our last-mile fleet is 100% electric, and we optimize every route to minimize environmental impact without compromising on speed.
               </p>
-              <div className="grid grid-cols-2 gap-8 mb-10">
+              <div className="grid grid-cols-2 gap-12 mb-12">
                 <div>
-                  <p className="text-4xl font-black text-brand-orange">99.9%</p>
-                  <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mt-2">Success Rate</p>
+                  <p className="text-5xl font-black text-brand-orange">0%</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-gray-500 mt-3">Carbon Emissions Target</p>
                 </div>
                 <div>
-                  <p className="text-4xl font-black text-brand-orange">15M+</p>
-                  <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mt-2">Packages/Year</p>
+                  <p className="text-5xl font-black text-brand-orange">500+</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-gray-500 mt-3">Electric Vehicles</p>
                 </div>
               </div>
-              <button className="bg-brand-orange text-white px-10 py-4 rounded-xl font-bold hover:bg-orange-600 transition-all shadow-lg">
-                Start Local Shipping
+              <button className="bg-white text-brand-blue px-12 py-5 rounded-2xl font-black hover:bg-brand-orange hover:text-white transition-all shadow-2xl">
+                OUR GREEN INITIATIVE
               </button>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 relative">
+              <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-brand-orange/20 rounded-full blur-[100px]"></div>
               <img 
-                src="/delivery-van.jpg" 
-                alt="Delivery" 
-                className="rounded-[40px] shadow-2xl scale-110"
+                src="/electric-truck.jpg" 
+                alt="Electric Delivery Truck" 
+                className="rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] relative z-10 transform translate-x-12"
               />
             </div>
           </div>
