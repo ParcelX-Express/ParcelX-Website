@@ -471,8 +471,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-          </div>
-        </section>
 
         {/* Global Network Map Mockup */}
         <section className="py-24 bg-gray-50">
