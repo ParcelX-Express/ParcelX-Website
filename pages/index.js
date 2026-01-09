@@ -90,16 +90,24 @@ export default function Home() {
 
               {/* Profile Dropdown */}
               {isProfileOpen && (
-                <div className="absolute right-0 mt-3 w-72 bg-white rounded-lg shadow-2xl py-2 z-[70] text-gray-800 animate-in fade-in zoom-in duration-200">
-                  <div className="px-6 py-4 border-b border-gray-100">
+                <div className="absolute right-0 mt-3 w-72 bg-white rounded-lg shadow-2xl py-2 z-[70] text-gray-800 animate-in fade-in zoom-in duration-200 border border-gray-100">
+                  <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <button className="text-[#007AB7] font-bold text-sm uppercase hover:underline">SIGN UP / LOG IN</button>
+                    <button 
+                      onClick={() => setIsProfileOpen(false)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
                   <div className="py-2">
                     {['My profile', 'Administrative tools', 'Email preferences', 'Address book', 'View & pay bill', 'Reporting'].map((item) => (
                       <button key={item} className="w-full text-left px-6 py-3 text-sm hover:bg-gray-50 transition-colors">{item}</button>
                     ))}
                   </div>
-                  <div className="px-6 py-4 bg-gray-50 mt-2">
+                  <div className="px-6 py-4 bg-gray-50/80 mt-2">
                     <p className="text-xs text-gray-500 leading-relaxed">
                       <button className="text-[#007AB7] underline font-bold">Open an account</button> to save on shipping costs, time-saving tools and more!
                     </p>
@@ -382,24 +390,20 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 grid grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
-                    <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 1" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                  </div>
-                  <div className="aspect-square rounded-3xl overflow-hidden shadow-xl">
-                    <img src="https://images.unsplash.com/photo-1590601448391-686212cb84b6?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 2" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                  </div>
+              <div className="flex-1 space-y-12">
+                <div className="rounded-3xl overflow-hidden shadow-2xl">
+                  <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 1" className="w-full h-64 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
-                <div className="pt-12 space-y-4">
-                  <div className="aspect-square rounded-3xl overflow-hidden shadow-xl">
-                    <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 3" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                  </div>
-                  <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl bg-brand-orange flex items-center justify-center p-8 text-white text-center">
-                    <div className="space-y-4">
-                      <div className="text-4xl font-black">24/7</div>
-                      <div className="text-sm font-bold uppercase tracking-widest">Support & Monitoring</div>
-                    </div>
+                <div className="rounded-3xl overflow-hidden shadow-2xl">
+                  <img src="https://images.unsplash.com/photo-1590601448391-686212cb84b6?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 2" className="w-full h-64 object-cover hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="rounded-3xl overflow-hidden shadow-2xl">
+                  <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" alt="Parcel Logistics 3" className="w-full h-64 object-cover hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="rounded-3xl overflow-hidden shadow-2xl bg-brand-orange flex items-center justify-center p-12 text-white text-center">
+                  <div className="space-y-4">
+                    <div className="text-5xl font-black">24/7</div>
+                    <div className="text-lg font-bold uppercase tracking-widest">Support & Monitoring</div>
                   </div>
                 </div>
               </div>
