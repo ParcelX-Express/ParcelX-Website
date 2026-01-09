@@ -46,7 +46,15 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
-    { title: 'Shipping', options: [{ label: 'Create a Shipment', href: '/create-shipment' }, 'Shipping Rates & Delivery Times', 'Schedule & Manage Pickups', 'Packing & Shipping Supplies'] },
+    { 
+      title: 'Shipping', 
+      options: [
+        { label: 'Create a Shipment', href: '/create-shipment' }, 
+        { label: 'Shipping Rates & Delivery Times', href: '/shipping-rates' }, 
+        { label: 'Schedule & Manage Pickups', href: '/schedule-pickups' }, 
+        { label: 'Packing & Shipping Supplies', href: '/shipping-supplies' }
+      ] 
+    },
     { title: 'Tracking', options: ['Track a Shipment', 'Advanced Shipment Tracking', 'Manage Your Delivery'] },
     { title: 'Design & Print', options: ['Business Cards', 'Flyers', 'Signs & Banners', 'Posters'] },
     { title: 'Locations', options: ['Find a Location', 'Drop off a Package', 'In-Store Services'] },

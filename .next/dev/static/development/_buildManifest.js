@@ -2,6 +2,9 @@ self.__BUILD_MANIFEST = {
   "/": [
     "static/chunks/pages/index.js"
   ],
+  "/create-shipment": [
+    "static/chunks/pages/create-shipment.js"
+  ],
   "__rewrites": {
     "afterFiles": [],
     "beforeFiles": [],
@@ -19,6 +22,9 @@ self.__BUILD_MANIFEST = {
     "/create-shipment",
     "/dashboard",
     "/login",
+    "/schedule-pickups",
+    "/shipping-rates",
+    "/shipping-supplies",
     "/signup",
     "/track-shipment"
   ]
