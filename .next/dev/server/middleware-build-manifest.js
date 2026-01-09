@@ -1,17 +1,5 @@
 globalThis.__BUILD_MANIFEST = {
   "pages": {
-    "/": [
-      "static/chunks/[root-of-the-server]__2d716426._.js",
-      "static/chunks/node_modules_next_dist_compiled_8ca6b690._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_15080aa3._.js",
-      "static/chunks/node_modules_next_dist_client_881bc7f7._.js",
-      "static/chunks/node_modules_next_dist_75b597d7._.js",
-      "static/chunks/node_modules_next_link_207af988.js",
-      "static/chunks/node_modules_react-dom_4411d9bd._.js",
-      "static/chunks/node_modules_f1be3ba2._.js",
-      "static/chunks/pages_index_2da965e7._.js",
-      "static/chunks/turbopack-pages_index_1a1f09c9._.js"
-    ],
     "/_app": [
       "static/chunks/node_modules_next_dist_compiled_8ca6b690._.js",
       "static/chunks/node_modules_next_dist_shared_lib_8bac8163._.js",
@@ -23,6 +11,19 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/src_index_f051a9e2.css",
       "static/chunks/pages__app_2da965e7._.js",
       "static/chunks/turbopack-pages__app_4d676963._.js"
+    ],
+    "/signup": [
+      "static/chunks/node_modules_next_dist_compiled_caaa605a._.js",
+      "static/chunks/node_modules_next_dist_shared_lib_15080aa3._.js",
+      "static/chunks/node_modules_next_dist_client_881bc7f7._.js",
+      "static/chunks/node_modules_next_dist_75b597d7._.js",
+      "static/chunks/node_modules_next_87234b82._.js",
+      "static/chunks/node_modules_react-dom_4411d9bd._.js",
+      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
+      "static/chunks/node_modules_99fa48be._.js",
+      "static/chunks/[root-of-the-server]__fda994d8._.js",
+      "static/chunks/pages_signup_2da965e7._.js",
+      "static/chunks/turbopack-pages_signup_7376d59a._.js"
     ]
   },
   "devFiles": [],
