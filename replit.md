@@ -56,9 +56,58 @@ ParcelX is a global shipping and delivery platform with real-time tracking. This
 - `/reporting` - Shipping reports and analytics
 
 ## Database Schema
-- `profiles` - User profile data linked to Supabase auth
-- `shipments` - Shipment records with tracking
-- `tracking_updates` - History of shipment status updates
+- `profiles` - User profile data linked to Supabase auth (includes first_name, last_name, country, contact_address, country_code, phone_number, receive_updates)
+- `shipments` - Shipment records with tracking (includes tracking_number, status, origin, destination, estimated_delivery)
+- `tracking_updates` - History of shipment status updates (location, description, status, occurrence_time)
+
+## Required Supabase Setup
+Run the following SQL in your Supabase SQL Editor to enable automatic profile creation and proper security:
+
+```sql
+-- Enable RLS on all tables
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.shipments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tracking_updates ENABLE ROW LEVEL SECURITY;
+
+-- Profiles: Users can read/update their own profile
+CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+
+-- Shipments: Users can manage their own shipments
+CREATE POLICY "Users can view own shipments" ON public.shipments FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own shipments" ON public.shipments FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own shipments" ON public.shipments FOR UPDATE USING (auth.uid() = user_id);
+
+-- Tracking updates: Users can view tracking for their shipments
+CREATE POLICY "Users can view tracking updates" ON public.tracking_updates FOR SELECT USING (
+  EXISTS (SELECT 1 FROM public.shipments WHERE shipments.id = tracking_updates.shipment_id AND shipments.user_id = auth.uid())
+);
+
+-- Auto-create profile on signup trigger
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, first_name, last_name, full_name, country, contact_address, country_code, phone_number, receive_updates)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    NEW.raw_user_meta_data->>'first_name',
+    NEW.raw_user_meta_data->>'last_name',
+    NEW.raw_user_meta_data->>'full_name',
+    NEW.raw_user_meta_data->>'country',
+    NEW.raw_user_meta_data->>'contact_address',
+    NEW.raw_user_meta_data->>'country_code',
+    NEW.raw_user_meta_data->>'phone_number',
+    COALESCE((NEW.raw_user_meta_data->>'receive_updates')::boolean, false)
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create trigger (drop if exists first)
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+```
 
 ## Environment Variables Required
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
