@@ -236,8 +236,8 @@ export default function Home() {
               />
             </div>
           ))}
-          <div className="relative z-10 text-center px-4">
-            <h1 className="text-5xl md:text-7xl font-light text-white leading-tight tracking-tight drop-shadow-lg">
+          <div className="relative z-10 text-center px-4 w-full max-w-4xl">
+            <h1 className="text-5xl md:text-7xl font-light text-white leading-tight tracking-tight drop-shadow-lg mb-12">
               {heroSlides[currentSlide].title.split(', ').map((text, i) => (
                 <React.Fragment key={i}>
                   {text}{i < heroSlides[currentSlide].title.split(', ').length - 1 && <><br />{i === 0 && 'manage, '}</>}
@@ -245,9 +245,35 @@ export default function Home() {
               ))}
               {heroSlides[currentSlide].title === "Ship, manage, track, deliver" ? null : heroSlides[currentSlide].title}
             </h1>
+
+            {/* Redesigned Tracking Section - Moved inside Hero for better visibility or directly below */}
+            <div className="bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-2xl inline-block w-full max-w-2xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex-grow relative">
+                  <input
+                    type="text"
+                    placeholder="ENTER TRACKING ID"
+                    value={trackingNumber}
+                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    className="w-full bg-white text-brand-blue px-6 py-4 rounded-xl text-lg outline-none placeholder:text-gray-400 font-bold"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-blue/30">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <Link 
+                  href={`/track-shipment?id=${trackingNumber}`}
+                  className="bg-brand-orange text-white px-10 py-4 rounded-xl font-black text-lg flex items-center justify-center gap-3 hover:bg-orange-600 transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
+                >
+                  TRACK NOW <span>→</span>
+                </Link>
+              </div>
+            </div>
           </div>
           {/* Slider Indicators */}
-          <div className="absolute bottom-32 left-0 right-0 z-20 flex justify-center gap-2">
+          <div className="absolute bottom-12 left-0 right-0 z-20 flex justify-center gap-2">
             {heroSlides.map((_, i) => (
               <button 
                 key={i}
@@ -260,7 +286,7 @@ export default function Home() {
 
         {/* Action Grid (Rate & Ship, Track, Locations) */}
         <section className="relative z-20 -mt-24 max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 shadow-2xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 shadow-2xl">
             {/* RATE & SHIP */}
             <div className="bg-gray-50 p-10 flex flex-col items-center justify-center text-center border-r border-gray-200">
               <div className="w-20 h-20 mb-6 text-gray-700">
@@ -271,16 +297,6 @@ export default function Home() {
               <span className="text-xl font-black tracking-widest text-brand-blue uppercase">RATE & SHIP</span>
             </div>
             
-            {/* TRACK */}
-            <div className="bg-brand-blue p-10 flex flex-col items-center justify-center text-center">
-              <div className="w-20 h-20 mb-6 text-white">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7V3m0 0L8 5m2-2l2 2" />
-                </svg>
-              </div>
-              <span className="text-xl font-black tracking-widest text-white uppercase">TRACK</span>
-            </div>
-
             {/* LOCATIONS */}
             <div className="bg-gray-50 p-10 flex flex-col items-center justify-center text-center">
               <div className="w-20 h-20 mb-6 text-gray-700">
@@ -294,24 +310,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Tracking ID Input Section */}
-        <section className="py-16 max-w-4xl mx-auto px-4">
-          <div className="flex flex-col sm:flex-row border-2 border-gray-200">
-            <input
-              type="text"
-              placeholder="TRACKING ID"
-              value={trackingNumber}
-              onChange={(e) => setTrackingNumber(e.target.value)}
-              className="flex-grow px-8 py-6 text-xl outline-none placeholder:text-gray-400 font-light"
-            />
-            <Link 
-              href={`/track-shipment?id=${trackingNumber}`}
-              className="bg-brand-orange text-white px-12 py-6 font-black text-xl flex items-center justify-center gap-4 hover:bg-orange-600 transition-colors"
-            >
-              TRACK <span className="text-2xl">→</span>
-            </Link>
-          </div>
-        </section>
 
         {/* Large Brand Icon Section */}
         <section className="py-12 flex justify-center">
@@ -448,6 +446,50 @@ export default function Home() {
                     <div className="text-sm text-gray-500 font-bold uppercase tracking-wider">Global Ports</div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Loading & Distribution Section */}
+        <section className="py-24 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            <div className="flex flex-col md:flex-row-reverse items-center gap-16">
+              <div className="flex-1">
+                <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
+                  <img 
+                    src="https://images.unsplash.com/photo-1600518464441-9154a4dba21b?auto=format&fit=crop&q=80&w=1000" 
+                    alt="Workers loading truck" 
+                    className="w-full h-[500px] object-cover"
+                  />
+                </div>
+              </div>
+              <div className="flex-1">
+                <span className="text-brand-orange font-bold uppercase tracking-widest text-sm">Efficient Handling</span>
+                <h2 className="text-4xl font-black text-brand-blue mt-4 mb-6">Precision Loading & Logistics</h2>
+                <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                  Our dedicated workforce ensures every parcel is handled with care and loaded with precision. Using optimized loading techniques, we maximize space and minimize transit damage.
+                </p>
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-brand-blue/5 rounded-xl flex items-center justify-center text-brand-blue">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-brand-blue">Expert Handling</h4>
+                      <p className="text-sm text-gray-500">Trained professionals managing every load.</p>
+                    </div>
+                  </li>
+                  <li className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-brand-blue/5 rounded-xl flex items-center justify-center text-brand-blue">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-brand-blue">Optimized Transit</h4>
+                      <p className="text-sm text-gray-500">Smart stacking for maximum security.</p>
+                    </div>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
