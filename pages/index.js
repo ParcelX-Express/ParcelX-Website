@@ -70,19 +70,24 @@ export default function Home() {
             <span className="text-3xl font-black tracking-tight">PARCEL<span className="text-brand-orange text-4xl">X</span></span>
           </Link>
           
-          <div className="flex items-center gap-6">
-            <button className="p-2 hover:bg-white/10 rounded-full transition-colors hidden md:block">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <div className="flex items-center gap-4 md:gap-6">
+            <div className="hidden lg:flex items-center gap-4 border-r border-white/20 pr-6 mr-2">
+              <button className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Sign Up</button>
+              <button className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Log In</button>
+            </div>
+            <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
             </button>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors z-50"
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors z-[60]"
+              aria-label="Toggle Menu"
             >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 ) : (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 )}
@@ -92,10 +97,15 @@ export default function Home() {
         </div>
 
         {/* Mobile Slide-out Menu */}
-        <div className={`fixed inset-0 bg-white text-gray-900 transform transition-transform duration-300 ease-in-out z-40 pt-16 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className="flex flex-col h-full overflow-y-auto">
-            <div className="p-4 bg-brand-blue">
-              <div className="relative">
+        <div className={`fixed inset-0 bg-white text-gray-900 transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+          {/* Menu Header with Search and X */}
+          <div className="bg-brand-blue p-4 flex flex-col gap-4 relative">
+             <div className="flex justify-between items-center pr-12">
+                <Link href="/" className="text-2xl font-black tracking-tighter text-white">
+                  PARCEL<span className="text-brand-orange">X</span>
+                </Link>
+             </div>
+             <div className="relative">
                 <input 
                   type="text" 
                   placeholder="Search or Tracking Numbers"
@@ -107,8 +117,14 @@ export default function Home() {
                   </svg>
                 </button>
               </div>
+          </div>
+
+          <div className="flex-grow overflow-y-auto">
+            <div className="p-6 border-b border-gray-100 flex gap-4">
+              <button className="flex-grow bg-brand-orange text-white py-3 font-bold uppercase text-sm hover:bg-orange-600 transition-colors shadow-sm">Sign Up</button>
+              <button className="flex-grow border-2 border-brand-blue text-brand-blue py-3 font-bold uppercase text-sm hover:bg-gray-50 transition-colors">Log In</button>
             </div>
-            <div className="flex-grow">
+            <div className="py-2">
               {menuItems.map((item, index) => (
                 <NavItem key={index} title={item.title} options={item.options} />
               ))}
