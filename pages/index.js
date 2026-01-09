@@ -57,7 +57,7 @@ export default function Home() {
       title: "Global Logistics Redefined"
     },
     {
-      image: "https://images.unsplash.com/photo-1524514587686-826ed1937280?auto=format&fit=crop&q=80&w=2000",
+      image: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=2000",
       title: "Reliable Shipping Solutions"
     }
   ];
@@ -434,14 +434,14 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex-1 space-y-12">
-                <div className="rounded-3xl overflow-hidden shadow-2xl group">
-                  <img src="https://images.unsplash.com/photo-1594122230689-45899d9e6f69?auto=format&fit=crop&q=80&w=1000" alt="Logistics Warehouse" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
+                <div className="rounded-3xl overflow-hidden shadow-2xl group border border-gray-100">
+                  <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" alt="Modern Logistics" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
-                <div className="rounded-3xl overflow-hidden shadow-2xl group">
-                  <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&q=80&w=1000" alt="Many People Carrying Parcels" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
+                <div className="rounded-3xl overflow-hidden shadow-2xl group border border-gray-100">
+                  <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Reliable Delivery" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
-                <div className="rounded-3xl overflow-hidden shadow-2xl group">
-                  <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Shipping Distribution" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
+                <div className="rounded-3xl overflow-hidden shadow-2xl group border border-gray-100">
+                  <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=1000" alt="Global Shipping" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl bg-brand-orange flex items-center justify-center p-12 text-white text-center">
                   <div className="space-y-4">
@@ -476,7 +476,7 @@ export default function Home() {
                 </ul>
               </div>
               <div className="flex-1">
-                <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&q=80&w=1000" alt="Distribution Center" className="rounded-3xl shadow-2xl" />
+                <img src="https://images.unsplash.com/photo-1587293855946-90ca18e7c511?auto=format&fit=crop&q=80&w=1000" alt="Distribution Center" className="rounded-3xl shadow-2xl" />
               </div>
             </div>
 
@@ -512,7 +512,7 @@ export default function Home() {
                 </ul>
               </div>
               <div className="flex-1">
-                <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&q=80&w=1000" alt="Secure Logistics" className="rounded-3xl shadow-2xl" />
+                <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=1000" alt="Secure Logistics Team" className="rounded-3xl shadow-2xl" />
               </div>
             </div>
           </div>
