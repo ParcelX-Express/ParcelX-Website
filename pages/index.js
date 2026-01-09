@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const NavItem = ({ title, options }) => {
@@ -45,6 +45,29 @@ export default function Home() {
   const [trackingNumber, setTrackingNumber] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const heroSlides = [
+    {
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=2000",
+      title: "Ship, manage, track, deliver"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=2000",
+      title: "Global Logistics Redefined"
+    },
+    {
+      image: "https://images.unsplash.com/photo-1524514587686-826ed1937280?auto=format&fit=crop&q=80&w=2000",
+      title: "Reliable Shipping Solutions"
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const menuItems = [
     { 
@@ -193,19 +216,39 @@ export default function Home() {
       </header>
 
       <main className="flex-grow">
-        {/* Cinematic Hero Section with FedEx Layout */}
-        <section className="relative h-[500px] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <img 
-              src="/shipping-port.jpg" 
-              alt="Global Shipping" 
-              className="w-full h-full object-cover brightness-[0.6]"
-            />
-          </div>
+        {/* Cinematic Hero Slider */}
+        <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
+          {heroSlides.map((slide, index) => (
+            <div 
+              key={index}
+              className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <img 
+                src={slide.image} 
+                alt={slide.title} 
+                className="w-full h-full object-cover brightness-[0.6]"
+              />
+            </div>
+          ))}
           <div className="relative z-10 text-center px-4">
-            <h1 className="text-5xl md:text-7xl font-light text-white leading-tight tracking-tight">
-              Ship, manage, <br />track, deliver
+            <h1 className="text-5xl md:text-7xl font-light text-white leading-tight tracking-tight drop-shadow-lg">
+              {heroSlides[currentSlide].title.split(', ').map((text, i) => (
+                <React.Fragment key={i}>
+                  {text}{i < heroSlides[currentSlide].title.split(', ').length - 1 && <><br />{i === 0 && 'manage, '}</>}
+                </React.Fragment>
+              ))}
+              {heroSlides[currentSlide].title === "Ship, manage, track, deliver" ? null : heroSlides[currentSlide].title}
             </h1>
+          </div>
+          {/* Slider Indicators */}
+          <div className="absolute bottom-32 left-0 right-0 z-20 flex justify-center gap-2">
+            {heroSlides.map((_, i) => (
+              <button 
+                key={i}
+                onClick={() => setCurrentSlide(i)}
+                className={`w-3 h-3 rounded-full transition-all ${i === currentSlide ? 'bg-brand-orange w-8' : 'bg-white/50 hover:bg-white'}`}
+              />
+            ))}
           </div>
         </section>
 
@@ -391,14 +434,14 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex-1 space-y-12">
-                <div className="rounded-3xl overflow-hidden shadow-2xl">
-                  <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbca?auto=format&fit=crop&q=80&w=1000" alt="Logistics Warehouse" className="w-full h-64 object-cover hover:scale-105 transition-transform duration-500" />
+                <div className="rounded-3xl overflow-hidden shadow-2xl group">
+                  <img src="https://images.unsplash.com/photo-1594122230689-45899d9e6f69?auto=format&fit=crop&q=80&w=1000" alt="Logistics Warehouse" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
-                <div className="rounded-3xl overflow-hidden shadow-2xl">
-                  <img src="https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&q=80&w=1000" alt="Courier Delivery" className="w-full h-64 object-cover hover:scale-105 transition-transform duration-500" />
+                <div className="rounded-3xl overflow-hidden shadow-2xl group">
+                  <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&q=80&w=1000" alt="Many People Carrying Parcels" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
-                <div className="rounded-3xl overflow-hidden shadow-2xl">
-                  <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&q=80&w=1000" alt="Shipping Packages" className="w-full h-64 object-cover hover:scale-105 transition-transform duration-500" />
+                <div className="rounded-3xl overflow-hidden shadow-2xl group">
+                  <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Shipping Distribution" className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl bg-brand-orange flex items-center justify-center p-12 text-white text-center">
                   <div className="space-y-4">
@@ -413,24 +456,66 @@ export default function Home() {
 
         {/* Global Network Map Mockup */}
         <section className="py-24 bg-gray-50">
-           <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
-              <h2 className="text-4xl font-black text-brand-blue mb-6">Our Global Footprint</h2>
-              <p className="text-lg text-gray-500 mb-16 max-w-2xl mx-auto">
-                Connecting 220+ countries and territories through 650+ aircraft and 200,000+ motorized vehicles.
-              </p>
-              <div className="relative aspect-[21/9] bg-white rounded-[40px] shadow-2xl overflow-hidden border border-gray-100">
-                <div className="absolute inset-0 opacity-40">
-                  <img src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&q=80&w=2000" className="w-full h-full object-cover" alt="World Map" />
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="p-8 bg-brand-blue/90 backdrop-blur-md rounded-3xl text-white max-w-sm shadow-2xl">
-                      <div className="text-brand-orange font-black text-2xl mb-2">Real-time Network</div>
-                      <p className="text-sm text-white/70 mb-6">Experience our logistics network in action through our interactive live-tracking globe.</p>
-                      <button className="w-full py-3 bg-white text-brand-blue font-bold rounded-xl hover:bg-brand-orange hover:text-white transition-all">LAUNCH EXPLORER</button>
-                   </div>
-                </div>
+           {/* ... existing content ... */}
+        </section>
+
+        {/* 3 Comprehensive Detail Sections */}
+        <section className="py-24 bg-white border-t border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            <div className="flex flex-col md:flex-row items-center gap-16 mb-24">
+              <div className="flex-1">
+                <span className="text-brand-orange font-bold uppercase tracking-widest text-sm">Automated Sorting</span>
+                <h2 className="text-4xl font-black text-brand-blue mt-4 mb-6">Cutting-Edge Distribution Technology</h2>
+                <p className="text-gray-600 leading-relaxed mb-8">
+                  Our facilities utilize advanced AI and robotics to sort over 50,000 parcels per hour. This precision ensures that your shipments are on the correct path from the microsecond they enter our network.
+                </p>
+                <ul className="space-y-3 text-sm font-bold text-brand-blue">
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> 99.9% Sorting Accuracy</li>
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> Real-time Path Optimization</li>
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> 24/7 Automated Operations</li>
+                </ul>
               </div>
-           </div>
+              <div className="flex-1">
+                <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&q=80&w=1000" alt="Distribution Center" className="rounded-3xl shadow-2xl" />
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row-reverse items-center gap-16 mb-24">
+              <div className="flex-1">
+                <span className="text-brand-orange font-bold uppercase tracking-widest text-sm">Last-Mile Delivery</span>
+                <h2 className="text-4xl font-black text-brand-blue mt-4 mb-6">Seamless Final Delivery Experience</h2>
+                <p className="text-gray-600 leading-relaxed mb-8">
+                  The last mile is the most critical. ParcelX combines human touch with smart routing to deliver to the most remote locations and busiest city centers with equal efficiency.
+                </p>
+                <ul className="space-y-3 text-sm font-bold text-brand-blue">
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> Dynamic Routing Algorithms</li>
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> Contactless Delivery Options</li>
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> Real-time Courier Tracking</li>
+                </ul>
+              </div>
+              <div className="flex-1">
+                <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=1000" alt="Courier Delivery" className="rounded-3xl shadow-2xl" />
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center gap-16">
+              <div className="flex-1">
+                <span className="text-brand-orange font-bold uppercase tracking-widest text-sm">Secure Logistics</span>
+                <h2 className="text-4xl font-black text-brand-blue mt-4 mb-6">Advanced Security & Tracking</h2>
+                <p className="text-gray-600 leading-relaxed mb-8">
+                  Security is baked into every step of our process. From biometric access in our hubs to tamper-evident seals and encrypted data transmission, your cargo is safe with us.
+                </p>
+                <ul className="space-y-3 text-sm font-bold text-brand-blue">
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> End-to-End Encryption</li>
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> Biometric Access Control</li>
+                  <li className="flex items-center gap-2"><div className="w-2 h-2 bg-brand-orange rounded-full"></div> 24/7 Security Monitoring</li>
+                </ul>
+              </div>
+              <div className="flex-1">
+                <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&q=80&w=1000" alt="Secure Logistics" className="rounded-3xl shadow-2xl" />
+              </div>
+            </div>
+          </div>
         </section>
       </main>
 
