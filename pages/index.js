@@ -57,7 +57,7 @@ export default function Home() {
       title: "Global Logistics Redefined"
     },
     {
-      image: "https://images.unsplash.com/photo-1506784919140-507245dd934c?auto=format&fit=crop&q=80&w=2000",
+      image: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&q=80&w=2000",
       title: "Fast & Reliable Delivery"
     }
   ];
@@ -414,6 +414,40 @@ export default function Home() {
                     <div className="text-xs text-white/50 uppercase font-bold tracking-wider">{stat.label}</div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Global Marine Logistics Section */}
+        <section className="py-24 bg-gray-50 border-t border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            <div className="flex flex-col md:flex-row items-center gap-16">
+              <div className="flex-1 order-2 md:order-1">
+                <div className="rounded-3xl overflow-hidden shadow-2xl">
+                  <img 
+                    src="https://images.unsplash.com/photo-1544441893-675973e31d85?auto=format&fit=crop&q=80&w=1000" 
+                    alt="Cargo Ship at Sea" 
+                    className="w-full h-[500px] object-cover"
+                  />
+                </div>
+              </div>
+              <div className="flex-1 order-1 md:order-2">
+                <span className="text-brand-orange font-bold uppercase tracking-widest text-sm">Ocean Freight</span>
+                <h2 className="text-4xl font-black text-brand-blue mt-4 mb-6">Global Marine Logistics</h2>
+                <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                  Our maritime network spans the globe, utilizing the world's most efficient shipping routes to transport heavy cargo across continents with precision and reliability.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex-1 min-w-[200px]">
+                    <div className="text-2xl font-black text-brand-blue">1,200+</div>
+                    <div className="text-sm text-gray-500 font-bold uppercase tracking-wider">Vessels Tracked</div>
+                  </div>
+                  <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm flex-1 min-w-[200px]">
+                    <div className="text-2xl font-black text-brand-blue">800+</div>
+                    <div className="text-sm text-gray-500 font-bold uppercase tracking-wider">Global Ports</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
