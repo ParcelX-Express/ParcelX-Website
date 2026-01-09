@@ -8,23 +8,25 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
       <header className="bg-brand-blue text-white sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-lg p-1">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 h-20 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-white rounded-lg p-1 group-hover:scale-105 transition-transform duration-200">
               <img src="/logo.png" alt="ParcelX Logo" className="w-full h-full object-contain" />
             </div>
             <span className="text-2xl font-black tracking-tighter">PARCEL<span className="text-brand-orange">X</span></span>
           </Link>
-          <nav className="hidden md:flex items-center space-x-8 font-bold text-sm uppercase tracking-widest">
-            <Link href="/" className="text-brand-orange">Home</Link>
-            <Link href="/track-shipment" className="hover:text-brand-orange transition-colors">Tracking</Link>
-            <Link href="/services" className="hover:text-brand-orange transition-colors">Services</Link>
-            <Link href="/shipping" className="hover:text-brand-orange transition-colors">Ship</Link>
+          
+          <nav className="hidden lg:flex items-center space-x-10 font-bold text-xs uppercase tracking-widest">
+            <Link href="/" className="text-brand-orange border-b-2 border-brand-orange py-1">Home</Link>
+            <Link href="/track-shipment" className="hover:text-brand-orange transition-colors py-1">Tracking</Link>
+            <Link href="/services" className="hover:text-brand-orange transition-colors py-1">Services</Link>
+            <Link href="/shipping" className="hover:text-brand-orange transition-colors py-1">Shipping</Link>
           </nav>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="hidden sm:block hover:text-brand-orange transition-colors font-bold text-sm uppercase tracking-widest">Login</Link>
-            <Link href="/signup" className="bg-brand-orange text-white px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-orange-600 transition-all shadow-md">
-              Sign Up
+
+          <div className="flex items-center gap-6">
+            <Link href="/login" className="hidden sm:block hover:text-brand-orange transition-colors font-bold text-xs uppercase tracking-widest">Login</Link>
+            <Link href="/signup" className="bg-brand-orange text-white px-8 py-3 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-orange-600 transition-all shadow-md hover:shadow-orange-500/20">
+              Get Started
             </Link>
           </div>
         </div>
@@ -32,35 +34,41 @@ export default function Home() {
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative h-[600px] flex items-center overflow-hidden">
+        <section className="relative h-[700px] flex items-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
               src="/cargo-ship.jpg" 
               alt="Global Shipping" 
-              className="w-full h-full object-cover brightness-50"
+              className="w-full h-full object-cover brightness-[0.4]"
             />
           </div>
-          <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 lg:px-8 w-full">
             <div className="max-w-2xl text-white">
-              <h2 className="text-6xl font-black mb-6 leading-tight">
+              <div className="inline-block bg-brand-orange/20 backdrop-blur-sm border border-brand-orange/30 text-brand-orange px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
+                Now Operating in 200+ Countries
+              </div>
+              <h2 className="text-5xl md:text-7xl font-black mb-8 leading-[1.1]">
                 THE WORLD IS <br /><span className="text-brand-orange">CONNECTED</span>
               </h2>
-              <p className="text-xl text-gray-200 mb-8 font-medium">
+              <p className="text-xl text-gray-300 mb-10 font-medium leading-relaxed max-w-xl">
                 Global logistics solutions for the modern world. We move your business forward with precision, speed, and reliability.
               </p>
               
               {/* Quick Tracking Tool */}
-              <div className="bg-white p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row gap-2 max-w-xl">
-                <input
-                  type="text"
-                  placeholder="Enter Tracking Number"
-                  value={trackingNumber}
-                  onChange={(e) => setTrackingNumber(e.target.value)}
-                  className="flex-grow px-6 py-4 rounded-xl text-brand-blue font-bold outline-none placeholder:text-gray-400"
-                />
+              <div className="bg-white/10 backdrop-blur-md p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row gap-2 max-w-xl border border-white/10">
+                <div className="flex-grow flex items-center bg-white rounded-xl px-4">
+                  <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                  <input
+                    type="text"
+                    placeholder="Enter Tracking ID..."
+                    value={trackingNumber}
+                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    className="w-full py-4 text-brand-blue font-bold outline-none placeholder:text-gray-400 bg-transparent"
+                  />
+                </div>
                 <Link 
                   href={`/track-shipment?id=${trackingNumber}`}
-                  className="bg-brand-orange text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-600 transition-all text-center"
+                  className="bg-brand-orange text-white px-10 py-4 rounded-xl font-black hover:bg-orange-600 transition-all text-center uppercase tracking-widest text-sm shadow-lg hover:shadow-orange-500/40"
                 >
                   TRACK
                 </Link>
