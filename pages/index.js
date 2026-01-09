@@ -55,10 +55,6 @@ export default function Home() {
     {
       image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&q=80&w=2000",
       title: "Global Logistics Redefined"
-    },
-    {
-      image: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=2000",
-      title: "Reliable Shipping Solutions"
     }
   ];
 
@@ -476,7 +472,7 @@ export default function Home() {
                 </ul>
               </div>
               <div className="flex-1">
-                <img src="https://images.unsplash.com/photo-1587293855946-90ca18e7c511?auto=format&fit=crop&q=80&w=1000" alt="Distribution Center" className="rounded-3xl shadow-2xl" />
+                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" alt="Distribution Center" className="rounded-3xl shadow-2xl" />
               </div>
             </div>
 
