@@ -284,33 +284,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Action Grid (Rate & Ship, Locations) */}
-        <section className="relative z-20 -mt-24 max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 shadow-2xl">
-            {/* RATE & SHIP */}
-            <div className="bg-gray-50 p-10 flex flex-col items-center justify-center text-center border-r border-gray-200">
-              <div className="w-20 h-20 mb-6 text-gray-700">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold tracking-widest text-brand-blue uppercase">RATE & SHIP</span>
-            </div>
-            
-            {/* LOCATIONS */}
-            <div className="bg-gray-50 p-10 flex flex-col items-center justify-center text-center">
-              <div className="w-20 h-20 mb-6 text-gray-700">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold tracking-widest text-brand-blue uppercase">LOCATIONS</span>
-            </div>
-          </div>
-        </section>
-
-
         {/* Large Brand Icon Section */}
         <section className="py-12 flex justify-center">
           <div className="w-48 h-48 border-4 border-brand-blue rounded-full flex items-center justify-center p-8">
@@ -424,7 +397,7 @@ export default function Home() {
               <div className="flex-1 order-2 md:order-1">
                 <div className="rounded-3xl overflow-hidden shadow-2xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&q=80&w=1000" 
+                    src="https://images.unsplash.com/photo-1544441893-675973e31d85?auto=format&fit=crop&q=80&w=1000" 
                     alt="Cargo Ship at Sea" 
                     className="w-full h-[500px] object-cover"
                   />
@@ -458,7 +431,7 @@ export default function Home() {
               <div className="flex-1">
                 <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
                   <img 
-                    src="https://images.unsplash.com/photo-1539220482118-95a21e37512a?auto=format&fit=crop&q=80&w=1000" 
+                    src="https://images.unsplash.com/photo-1545648580-5a3d46338b29?auto=format&fit=crop&q=80&w=1000" 
                     alt="Workers loading truck" 
                     className="w-full h-[500px] object-cover"
                   />
