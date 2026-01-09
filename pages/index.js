@@ -22,15 +22,19 @@ const NavItem = ({ title, options }) => {
       </button>
       {isOpen && options && (
         <div className="bg-gray-50 py-2">
-          {options.map((option, idx) => (
-            <Link
-              key={idx}
-              href="#"
-              className="block py-3 px-10 text-gray-600 hover:text-brand-blue hover:bg-gray-100 transition-colors"
-            >
-              {option}
-            </Link>
-          ))}
+          {options.map((option, idx) => {
+            const label = typeof option === 'string' ? option : option.label;
+            const href = typeof option === 'string' ? '#' : option.href;
+            return (
+              <Link
+                key={idx}
+                href={href}
+                className="block py-3 px-10 text-gray-600 hover:text-brand-blue hover:bg-gray-100 transition-colors"
+              >
+                {label}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
@@ -42,7 +46,7 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
-    { title: 'Shipping', options: ['Create a Shipment', 'Shipping Rates & Delivery Times', 'Schedule & Manage Pickups', 'Packing & Shipping Supplies'] },
+    { title: 'Shipping', options: [{ label: 'Create a Shipment', href: '/create-shipment' }, 'Shipping Rates & Delivery Times', 'Schedule & Manage Pickups', 'Packing & Shipping Supplies'] },
     { title: 'Tracking', options: ['Track a Shipment', 'Advanced Shipment Tracking', 'Manage Your Delivery'] },
     { title: 'Design & Print', options: ['Business Cards', 'Flyers', 'Signs & Banners', 'Posters'] },
     { title: 'Locations', options: ['Find a Location', 'Drop off a Package', 'In-Store Services'] },

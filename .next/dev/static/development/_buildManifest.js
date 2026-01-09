@@ -16,6 +16,7 @@ self.__BUILD_MANIFEST = {
     "/TrackShipment",
     "/_app",
     "/_error",
+    "/create-shipment",
     "/dashboard",
     "/login",
     "/signup",
