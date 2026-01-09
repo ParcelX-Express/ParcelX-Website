@@ -524,7 +524,7 @@ function Home() {
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
-                className: "jsx-76f6f303f5f1e2fa" + " " + `fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-brand-blue/95 backdrop-blur-md h-16 shadow-xl' : 'bg-transparent h-24'}`,
+                className: "jsx-76f6f303f5f1e2fa" + " " + `fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-brand-blue h-16 shadow-2xl' : 'bg-brand-blue/20 backdrop-blur-sm h-24'}`,
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "jsx-76f6f303f5f1e2fa" + " " + "max-w-7xl mx-auto px-6 h-full flex justify-between items-center",
                     children: [
@@ -533,7 +533,7 @@ function Home() {
                             className: "flex items-center gap-3 group",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "jsx-76f6f303f5f1e2fa" + " " + "w-10 h-10 bg-white rounded-xl p-1.5 shadow-lg transform group-hover:rotate-6 transition-transform",
+                                    className: "jsx-76f6f303f5f1e2fa" + " " + "w-10 h-10 bg-white rounded-xl p-1.5 shadow-lg transform group-hover:rotate-6 transition-transform flex items-center justify-center",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
                                         src: "/logo.png",
                                         alt: "ParcelX",
@@ -549,7 +549,7 @@ function Home() {
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    className: "jsx-76f6f303f5f1e2fa" + " " + `text-2xl font-black tracking-tighter transition-colors ${scrolled ? 'text-white' : 'text-white'}`,
+                                    className: "jsx-76f6f303f5f1e2fa" + " " + "text-2xl font-black tracking-tighter text-white",
                                     children: [
                                         "PARCEL",
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -573,11 +573,11 @@ function Home() {
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
-                            className: "jsx-76f6f303f5f1e2fa" + " " + "hidden lg:flex items-center space-x-10 text-[11px] font-black uppercase tracking-[0.2em]",
+                            className: "jsx-76f6f303f5f1e2fa" + " " + "hidden lg:flex items-center space-x-10",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                     href: "/",
-                                    className: "text-brand-orange border-b-2 border-brand-orange pb-1",
+                                    className: "text-brand-orange font-black text-[11px] uppercase tracking-[0.2em] border-b-2 border-brand-orange pb-1",
                                     children: "Overview"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/index.js",
@@ -586,7 +586,7 @@ function Home() {
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                     href: "/track-shipment",
-                                    className: "text-white/80 hover:text-brand-orange transition-colors pb-1",
+                                    className: "text-white hover:text-brand-orange font-black text-[11px] uppercase tracking-[0.2em] transition-colors",
                                     children: "Tracking"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/index.js",
@@ -595,7 +595,7 @@ function Home() {
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                     href: "/services",
-                                    className: "text-white/80 hover:text-brand-orange transition-colors pb-1",
+                                    className: "text-white hover:text-brand-orange font-black text-[11px] uppercase tracking-[0.2em] transition-colors",
                                     children: "Solutions"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/index.js",
@@ -604,7 +604,7 @@ function Home() {
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                     href: "/network",
-                                    className: "text-white/80 hover:text-brand-orange transition-colors pb-1",
+                                    className: "text-white hover:text-brand-orange font-black text-[11px] uppercase tracking-[0.2em] transition-colors",
                                     children: "Network"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/index.js",

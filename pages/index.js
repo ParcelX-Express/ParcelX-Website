@@ -20,22 +20,22 @@ export default function Home() {
       </Head>
 
       {/* Modern Header */}
-      <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-brand-blue/95 backdrop-blur-md h-16 shadow-xl' : 'bg-transparent h-24'}`}>
+      <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-brand-blue h-16 shadow-2xl' : 'bg-brand-blue/20 backdrop-blur-sm h-24'}`}>
         <div className="max-w-7xl mx-auto px-6 h-full flex justify-between items-center">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-lg transform group-hover:rotate-6 transition-transform">
+            <div className="w-10 h-10 bg-white rounded-xl p-1.5 shadow-lg transform group-hover:rotate-6 transition-transform flex items-center justify-center">
               <img src="/logo.png" alt="ParcelX" className="w-full h-full object-contain" />
             </div>
-            <span className={`text-2xl font-black tracking-tighter transition-colors ${scrolled ? 'text-white' : 'text-white'}`}>
+            <span className="text-2xl font-black tracking-tighter text-white">
               PARCEL<span className="text-brand-orange">X</span>
             </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center space-x-10 text-[11px] font-black uppercase tracking-[0.2em]">
-            <Link href="/" className="text-brand-orange border-b-2 border-brand-orange pb-1">Overview</Link>
-            <Link href="/track-shipment" className="text-white/80 hover:text-brand-orange transition-colors pb-1">Tracking</Link>
-            <Link href="/services" className="text-white/80 hover:text-brand-orange transition-colors pb-1">Solutions</Link>
-            <Link href="/network" className="text-white/80 hover:text-brand-orange transition-colors pb-1">Network</Link>
+          <nav className="hidden lg:flex items-center space-x-10">
+            <Link href="/" className="text-brand-orange font-black text-[11px] uppercase tracking-[0.2em] border-b-2 border-brand-orange pb-1">Overview</Link>
+            <Link href="/track-shipment" className="text-white hover:text-brand-orange font-black text-[11px] uppercase tracking-[0.2em] transition-colors">Tracking</Link>
+            <Link href="/services" className="text-white hover:text-brand-orange font-black text-[11px] uppercase tracking-[0.2em] transition-colors">Solutions</Link>
+            <Link href="/network" className="text-white hover:text-brand-orange font-black text-[11px] uppercase tracking-[0.2em] transition-colors">Network</Link>
           </nav>
 
           <div className="flex items-center gap-6">

@@ -829,8 +829,8 @@ img, video {
   background-color: rgb(10 37 64 / var(--tw-bg-opacity, 1));
 }
 
-.bg-brand-blue\/95 {
-  background-color: #0a2540f2;
+.bg-brand-blue\/20 {
+  background-color: #0a254033;
 }
 
 .bg-brand-gray-light {
@@ -1308,10 +1308,6 @@ img, video {
   color: #fff6;
 }
 
-.text-white\/80 {
-  color: #fffc;
-}
-
 .text-yellow-800 {
   --tw-text-opacity: 1;
   color: rgb(133 77 14 / var(--tw-text-opacity, 1));
@@ -1371,12 +1367,6 @@ img, video {
 .ring-orange-100 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(255 237 213 / var(--tw-ring-opacity, 1));
-}
-
-.backdrop-blur-md {
-  --tw-backdrop-blur: blur(12px);
-  -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
-  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
 }
 
 .backdrop-blur-sm {
