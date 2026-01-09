@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///home/runner/workspace/pages/index.js"],"sourcesContent":["import React from 'react';\nimport Link from 'next/link';\n\nexport default function Home() {\n  return (\n    <div className=\"min-h-screen flex flex-col items-center justify-center bg-gray-50\">\n      <h1 className=\"text-5xl font-bold mb-6\">Welcome to ParcelX</h1>\n      <p className=\"text-lg mb-6\">Fast, reliable global shipping with real-time tracking.</p>\n      <div className=\"flex gap-4\">\n        <Link href=\"/signup\" className=\"bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700\">\n          Get Started\n        </Link>\n        <Link href=\"/login\" className=\"bg-gray-300 px-6 py-3 rounded hover:bg-gray-400\">\n          Login\n        </Link>\n      </div>\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;;AAAA;AACA;;;;AAEe,SAAS;IACtB,qBACE,qKAAC;QAAI,WAAU;;0BACb,qKAAC;gBAAG,WAAU;0BAA0B;;;;;;0BACxC,qKAAC;gBAAE,WAAU;0BAAe;;;;;;0BAC5B,qKAAC;gBAAI,WAAU;;kCACb,qKAAC,gIAAI;wBAAC,MAAK;wBAAU,WAAU;kCAA6D;;;;;;kCAG5F,qKAAC,gIAAI;wBAAC,MAAK;wBAAS,WAAU;kCAAkD;;;;;;;;;;;;;;;;;;AAMxF"}}]
+}
