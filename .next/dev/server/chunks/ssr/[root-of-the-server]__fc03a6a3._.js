@@ -1,500 +1,57 @@
-(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([typeof document === "object" ? document.currentScript : undefined,
-"[turbopack]/browser/dev/hmr-client/hmr-client.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
+module.exports = [
+"[externals]/fs [external] (fs, cjs)", ((__turbopack_context__, module, exports) => {
 
-/// <reference path="../../../shared/runtime-types.d.ts" />
-/// <reference path="../../runtime/base/dev-globals.d.ts" />
-/// <reference path="../../runtime/base/dev-protocol.d.ts" />
-/// <reference path="../../runtime/base/dev-extensions.ts" />
-__turbopack_context__.s([
-    "connect",
-    ()=>connect,
-    "setHooks",
-    ()=>setHooks,
-    "subscribeToUpdate",
-    ()=>subscribeToUpdate
-]);
-function connect({ addMessageListener, sendMessage, onUpdateError = console.error }) {
-    addMessageListener((msg)=>{
-        switch(msg.type){
-            case 'turbopack-connected':
-                handleSocketConnected(sendMessage);
-                break;
-            default:
-                try {
-                    if (Array.isArray(msg.data)) {
-                        for(let i = 0; i < msg.data.length; i++){
-                            handleSocketMessage(msg.data[i]);
-                        }
-                    } else {
-                        handleSocketMessage(msg.data);
-                    }
-                    applyAggregatedUpdates();
-                } catch (e) {
-                    console.warn('[Fast Refresh] performing full reload\n\n' + "Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.\n" + 'You might have a file which exports a React component but also exports a value that is imported by a non-React component file.\n' + 'Consider migrating the non-React component export to a separate file and importing it into both files.\n\n' + 'It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.\n' + 'Fast Refresh requires at least one parent function component in your React tree.');
-                    onUpdateError(e);
-                    location.reload();
-                }
-                break;
-        }
-    });
-    const queued = globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS;
-    if (queued != null && !Array.isArray(queued)) {
-        throw new Error('A separate HMR handler was already registered');
-    }
-    globalThis.TURBOPACK_CHUNK_UPDATE_LISTENERS = {
-        push: ([chunkPath, callback])=>{
-            subscribeToChunkUpdate(chunkPath, sendMessage, callback);
-        }
-    };
-    if (Array.isArray(queued)) {
-        for (const [chunkPath, callback] of queued){
-            subscribeToChunkUpdate(chunkPath, sendMessage, callback);
-        }
-    }
-}
-const updateCallbackSets = new Map();
-function sendJSON(sendMessage, message) {
-    sendMessage(JSON.stringify(message));
-}
-function resourceKey(resource) {
-    return JSON.stringify({
-        path: resource.path,
-        headers: resource.headers || null
-    });
-}
-function subscribeToUpdates(sendMessage, resource) {
-    sendJSON(sendMessage, {
-        type: 'turbopack-subscribe',
-        ...resource
-    });
-    return ()=>{
-        sendJSON(sendMessage, {
-            type: 'turbopack-unsubscribe',
-            ...resource
-        });
-    };
-}
-function handleSocketConnected(sendMessage) {
-    for (const key of updateCallbackSets.keys()){
-        subscribeToUpdates(sendMessage, JSON.parse(key));
-    }
-}
-// we aggregate all pending updates until the issues are resolved
-const chunkListsWithPendingUpdates = new Map();
-function aggregateUpdates(msg) {
-    const key = resourceKey(msg.resource);
-    let aggregated = chunkListsWithPendingUpdates.get(key);
-    if (aggregated) {
-        aggregated.instruction = mergeChunkListUpdates(aggregated.instruction, msg.instruction);
-    } else {
-        chunkListsWithPendingUpdates.set(key, msg);
-    }
-}
-function applyAggregatedUpdates() {
-    if (chunkListsWithPendingUpdates.size === 0) return;
-    hooks.beforeRefresh();
-    for (const msg of chunkListsWithPendingUpdates.values()){
-        triggerUpdate(msg);
-    }
-    chunkListsWithPendingUpdates.clear();
-    finalizeUpdate();
-}
-function mergeChunkListUpdates(updateA, updateB) {
-    let chunks;
-    if (updateA.chunks != null) {
-        if (updateB.chunks == null) {
-            chunks = updateA.chunks;
-        } else {
-            chunks = mergeChunkListChunks(updateA.chunks, updateB.chunks);
-        }
-    } else if (updateB.chunks != null) {
-        chunks = updateB.chunks;
-    }
-    let merged;
-    if (updateA.merged != null) {
-        if (updateB.merged == null) {
-            merged = updateA.merged;
-        } else {
-            // Since `merged` is an array of updates, we need to merge them all into
-            // one, consistent update.
-            // Since there can only be `EcmascriptMergeUpdates` in the array, there is
-            // no need to key on the `type` field.
-            let update = updateA.merged[0];
-            for(let i = 1; i < updateA.merged.length; i++){
-                update = mergeChunkListEcmascriptMergedUpdates(update, updateA.merged[i]);
-            }
-            for(let i = 0; i < updateB.merged.length; i++){
-                update = mergeChunkListEcmascriptMergedUpdates(update, updateB.merged[i]);
-            }
-            merged = [
-                update
-            ];
-        }
-    } else if (updateB.merged != null) {
-        merged = updateB.merged;
-    }
-    return {
-        type: 'ChunkListUpdate',
-        chunks,
-        merged
-    };
-}
-function mergeChunkListChunks(chunksA, chunksB) {
-    const chunks = {};
-    for (const [chunkPath, chunkUpdateA] of Object.entries(chunksA)){
-        const chunkUpdateB = chunksB[chunkPath];
-        if (chunkUpdateB != null) {
-            const mergedUpdate = mergeChunkUpdates(chunkUpdateA, chunkUpdateB);
-            if (mergedUpdate != null) {
-                chunks[chunkPath] = mergedUpdate;
-            }
-        } else {
-            chunks[chunkPath] = chunkUpdateA;
-        }
-    }
-    for (const [chunkPath, chunkUpdateB] of Object.entries(chunksB)){
-        if (chunks[chunkPath] == null) {
-            chunks[chunkPath] = chunkUpdateB;
-        }
-    }
-    return chunks;
-}
-function mergeChunkUpdates(updateA, updateB) {
-    if (updateA.type === 'added' && updateB.type === 'deleted' || updateA.type === 'deleted' && updateB.type === 'added') {
-        return undefined;
-    }
-    if (updateA.type === 'partial') {
-        invariant(updateA.instruction, 'Partial updates are unsupported');
-    }
-    if (updateB.type === 'partial') {
-        invariant(updateB.instruction, 'Partial updates are unsupported');
-    }
-    return undefined;
-}
-function mergeChunkListEcmascriptMergedUpdates(mergedA, mergedB) {
-    const entries = mergeEcmascriptChunkEntries(mergedA.entries, mergedB.entries);
-    const chunks = mergeEcmascriptChunksUpdates(mergedA.chunks, mergedB.chunks);
-    return {
-        type: 'EcmascriptMergedUpdate',
-        entries,
-        chunks
-    };
-}
-function mergeEcmascriptChunkEntries(entriesA, entriesB) {
-    return {
-        ...entriesA,
-        ...entriesB
-    };
-}
-function mergeEcmascriptChunksUpdates(chunksA, chunksB) {
-    if (chunksA == null) {
-        return chunksB;
-    }
-    if (chunksB == null) {
-        return chunksA;
-    }
-    const chunks = {};
-    for (const [chunkPath, chunkUpdateA] of Object.entries(chunksA)){
-        const chunkUpdateB = chunksB[chunkPath];
-        if (chunkUpdateB != null) {
-            const mergedUpdate = mergeEcmascriptChunkUpdates(chunkUpdateA, chunkUpdateB);
-            if (mergedUpdate != null) {
-                chunks[chunkPath] = mergedUpdate;
-            }
-        } else {
-            chunks[chunkPath] = chunkUpdateA;
-        }
-    }
-    for (const [chunkPath, chunkUpdateB] of Object.entries(chunksB)){
-        if (chunks[chunkPath] == null) {
-            chunks[chunkPath] = chunkUpdateB;
-        }
-    }
-    if (Object.keys(chunks).length === 0) {
-        return undefined;
-    }
-    return chunks;
-}
-function mergeEcmascriptChunkUpdates(updateA, updateB) {
-    if (updateA.type === 'added' && updateB.type === 'deleted') {
-        // These two completely cancel each other out.
-        return undefined;
-    }
-    if (updateA.type === 'deleted' && updateB.type === 'added') {
-        const added = [];
-        const deleted = [];
-        const deletedModules = new Set(updateA.modules ?? []);
-        const addedModules = new Set(updateB.modules ?? []);
-        for (const moduleId of addedModules){
-            if (!deletedModules.has(moduleId)) {
-                added.push(moduleId);
-            }
-        }
-        for (const moduleId of deletedModules){
-            if (!addedModules.has(moduleId)) {
-                deleted.push(moduleId);
-            }
-        }
-        if (added.length === 0 && deleted.length === 0) {
-            return undefined;
-        }
-        return {
-            type: 'partial',
-            added,
-            deleted
-        };
-    }
-    if (updateA.type === 'partial' && updateB.type === 'partial') {
-        const added = new Set([
-            ...updateA.added ?? [],
-            ...updateB.added ?? []
-        ]);
-        const deleted = new Set([
-            ...updateA.deleted ?? [],
-            ...updateB.deleted ?? []
-        ]);
-        if (updateB.added != null) {
-            for (const moduleId of updateB.added){
-                deleted.delete(moduleId);
-            }
-        }
-        if (updateB.deleted != null) {
-            for (const moduleId of updateB.deleted){
-                added.delete(moduleId);
-            }
-        }
-        return {
-            type: 'partial',
-            added: [
-                ...added
-            ],
-            deleted: [
-                ...deleted
-            ]
-        };
-    }
-    if (updateA.type === 'added' && updateB.type === 'partial') {
-        const modules = new Set([
-            ...updateA.modules ?? [],
-            ...updateB.added ?? []
-        ]);
-        for (const moduleId of updateB.deleted ?? []){
-            modules.delete(moduleId);
-        }
-        return {
-            type: 'added',
-            modules: [
-                ...modules
-            ]
-        };
-    }
-    if (updateA.type === 'partial' && updateB.type === 'deleted') {
-        // We could eagerly return `updateB` here, but this would potentially be
-        // incorrect if `updateA` has added modules.
-        const modules = new Set(updateB.modules ?? []);
-        if (updateA.added != null) {
-            for (const moduleId of updateA.added){
-                modules.delete(moduleId);
-            }
-        }
-        return {
-            type: 'deleted',
-            modules: [
-                ...modules
-            ]
-        };
-    }
-    // Any other update combination is invalid.
-    return undefined;
-}
-function invariant(_, message) {
-    throw new Error(`Invariant: ${message}`);
-}
-const CRITICAL = [
-    'bug',
-    'error',
-    'fatal'
-];
-function compareByList(list, a, b) {
-    const aI = list.indexOf(a) + 1 || list.length;
-    const bI = list.indexOf(b) + 1 || list.length;
-    return aI - bI;
-}
-const chunksWithIssues = new Map();
-function emitIssues() {
-    const issues = [];
-    const deduplicationSet = new Set();
-    for (const [_, chunkIssues] of chunksWithIssues){
-        for (const chunkIssue of chunkIssues){
-            if (deduplicationSet.has(chunkIssue.formatted)) continue;
-            issues.push(chunkIssue);
-            deduplicationSet.add(chunkIssue.formatted);
-        }
-    }
-    sortIssues(issues);
-    hooks.issues(issues);
-}
-function handleIssues(msg) {
-    const key = resourceKey(msg.resource);
-    let hasCriticalIssues = false;
-    for (const issue of msg.issues){
-        if (CRITICAL.includes(issue.severity)) {
-            hasCriticalIssues = true;
-        }
-    }
-    if (msg.issues.length > 0) {
-        chunksWithIssues.set(key, msg.issues);
-    } else if (chunksWithIssues.has(key)) {
-        chunksWithIssues.delete(key);
-    }
-    emitIssues();
-    return hasCriticalIssues;
-}
-const SEVERITY_ORDER = [
-    'bug',
-    'fatal',
-    'error',
-    'warning',
-    'info',
-    'log'
-];
-const CATEGORY_ORDER = [
-    'parse',
-    'resolve',
-    'code generation',
-    'rendering',
-    'typescript',
-    'other'
-];
-function sortIssues(issues) {
-    issues.sort((a, b)=>{
-        const first = compareByList(SEVERITY_ORDER, a.severity, b.severity);
-        if (first !== 0) return first;
-        return compareByList(CATEGORY_ORDER, a.category, b.category);
-    });
-}
-const hooks = {
-    beforeRefresh: ()=>{},
-    refresh: ()=>{},
-    buildOk: ()=>{},
-    issues: (_issues)=>{}
-};
-function setHooks(newHooks) {
-    Object.assign(hooks, newHooks);
-}
-function handleSocketMessage(msg) {
-    sortIssues(msg.issues);
-    handleIssues(msg);
-    switch(msg.type){
-        case 'issues':
-            break;
-        case 'partial':
-            // aggregate updates
-            aggregateUpdates(msg);
-            break;
-        default:
-            // run single update
-            const runHooks = chunkListsWithPendingUpdates.size === 0;
-            if (runHooks) hooks.beforeRefresh();
-            triggerUpdate(msg);
-            if (runHooks) finalizeUpdate();
-            break;
-    }
-}
-function finalizeUpdate() {
-    hooks.refresh();
-    hooks.buildOk();
-    // This is used by the Next.js integration test suite to notify it when HMR
-    // updates have been completed.
-    // TODO: Only run this in test environments (gate by `process.env.__NEXT_TEST_MODE`)
-    if (globalThis.__NEXT_HMR_CB) {
-        globalThis.__NEXT_HMR_CB();
-        globalThis.__NEXT_HMR_CB = null;
-    }
-}
-function subscribeToChunkUpdate(chunkListPath, sendMessage, callback) {
-    return subscribeToUpdate({
-        path: chunkListPath
-    }, sendMessage, callback);
-}
-function subscribeToUpdate(resource, sendMessage, callback) {
-    const key = resourceKey(resource);
-    let callbackSet;
-    const existingCallbackSet = updateCallbackSets.get(key);
-    if (!existingCallbackSet) {
-        callbackSet = {
-            callbacks: new Set([
-                callback
-            ]),
-            unsubscribe: subscribeToUpdates(sendMessage, resource)
-        };
-        updateCallbackSets.set(key, callbackSet);
-    } else {
-        existingCallbackSet.callbacks.add(callback);
-        callbackSet = existingCallbackSet;
-    }
-    return ()=>{
-        callbackSet.callbacks.delete(callback);
-        if (callbackSet.callbacks.size === 0) {
-            callbackSet.unsubscribe();
-            updateCallbackSets.delete(key);
-        }
-    };
-}
-function triggerUpdate(msg) {
-    const key = resourceKey(msg.resource);
-    const callbackSet = updateCallbackSets.get(key);
-    if (!callbackSet) {
-        return;
-    }
-    for (const callback of callbackSet.callbacks){
-        callback(msg);
-    }
-    if (msg.type === 'notFound') {
-        // This indicates that the resource which we subscribed to either does not exist or
-        // has been deleted. In either case, we should clear all update callbacks, so if a
-        // new subscription is created for the same resource, it will send a new "subscribe"
-        // message to the server.
-        // No need to send an "unsubscribe" message to the server, it will have already
-        // dropped the update stream before sending the "notFound" message.
-        updateCallbackSets.delete(key);
-    }
-}
+const mod = __turbopack_context__.x("fs", () => require("fs"));
+
+module.exports = mod;
 }),
-"[project]/pages/track-shipment.js [client] (ecmascript)", ((__turbopack_context__) => {
+"[externals]/stream [external] (stream, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("stream", () => require("stream"));
+
+module.exports = mod;
+}),
+"[externals]/zlib [external] (zlib, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("zlib", () => require("zlib"));
+
+module.exports = mod;
+}),
+"[externals]/react-dom [external] (react-dom, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("react-dom", () => require("react-dom"));
+
+module.exports = mod;
+}),
+"[project]/pages/track-shipment.js [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
     "default",
     ()=>TrackShipment
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/link.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react [external] (react, cjs)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/link.js [ssr] (ecmascript)");
 ;
-var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
 function TrackShipment() {
-    _s();
-    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
-    const [trackingNumber, setTrackingNumber] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
-    const [shipment, setShipment] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [trackingUpdates, setTrackingUpdates] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('');
-    const [searched, setSearched] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "TrackShipment.useEffect": ()=>{
-            if (router.query.id) {
-                setTrackingNumber(router.query.id);
-                handleTrack(router.query.id);
-            }
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
+    const [trackingNumber, setTrackingNumber] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])('');
+    const [shipment, setShipment] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
+    const [trackingUpdates, setTrackingUpdates] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
+    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])('');
+    const [searched, setSearched] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        if (router.query.id) {
+            setTrackingNumber(router.query.id);
+            handleTrack(router.query.id);
         }
-    }["TrackShipment.useEffect"], [
+    }, [
         router.query.id
     ]);
     const handleTrack = async (trackingId = trackingNumber)=>{
@@ -567,22 +124,22 @@ function TrackShipment() {
             minute: '2-digit'
         });
     };
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
         className: "min-h-screen bg-brand-gray-light flex flex-col",
         children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("header", {
                 className: "bg-brand-blue text-white sticky top-0 z-50",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                     className: "max-w-7xl mx-auto px-4 md:px-8 h-16 flex justify-between items-center",
                     children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                             href: "/",
                             className: "flex items-center gap-2",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                 className: "text-2xl font-black tracking-tight",
                                 children: [
                                     "PARCEL",
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                         className: "text-brand-orange text-3xl",
                                         children: "X"
                                     }, void 0, false, {
@@ -601,13 +158,13 @@ function TrackShipment() {
                             lineNumber: 91,
                             columnNumber: 11
                         }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                             className: "flex items-center gap-3 md:gap-6",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                     className: "flex items-center gap-2 md:gap-4",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                                             href: "/signup",
                                             className: "text-[10px] md:text-xs font-bold uppercase hover:text-brand-orange transition-colors bg-brand-orange hover:bg-orange-600 px-2 py-1 md:px-4 md:py-2 rounded",
                                             children: "Sign Up"
@@ -616,7 +173,7 @@ function TrackShipment() {
                                             lineNumber: 96,
                                             columnNumber: 15
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                                             href: "/login",
                                             className: "text-[10px] md:text-xs font-bold uppercase hover:text-brand-orange transition-colors border border-white/30 px-2 py-1 md:px-4 md:py-2 rounded hover:bg-white/10",
                                             children: "Log In"
@@ -631,7 +188,7 @@ function TrackShipment() {
                                     lineNumber: 95,
                                     columnNumber: 13
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                                     href: "/dashboard",
                                     className: "hidden md:block hover:text-brand-orange transition-colors font-bold text-sm",
                                     children: "Dashboard"
@@ -657,13 +214,13 @@ function TrackShipment() {
                 lineNumber: 89,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("main", {
                 className: "max-w-4xl mx-auto w-full p-6 lg:p-10 flex-grow",
                 children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "text-center mb-12",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h1", {
                                 className: "text-4xl font-extrabold text-brand-blue mb-4",
                                 children: "Real-Time Tracking"
                             }, void 0, false, {
@@ -671,7 +228,7 @@ function TrackShipment() {
                                 lineNumber: 106,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                 className: "text-brand-gray-dark text-lg",
                                 children: "Enter your tracking number to see the current status of your shipment."
                             }, void 0, false, {
@@ -685,10 +242,10 @@ function TrackShipment() {
                         lineNumber: 105,
                         columnNumber: 9
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "bg-white p-2 rounded-2xl shadow-xl border border-gray-100 flex flex-col sm:flex-row gap-2 mb-10",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
                                 type: "text",
                                 placeholder: "Enter Tracking Number (e.g. PX123456)",
                                 value: trackingNumber,
@@ -700,18 +257,18 @@ function TrackShipment() {
                                 lineNumber: 111,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                 onClick: ()=>handleTrack(),
                                 disabled: loading,
                                 className: "bg-brand-orange text-white px-10 py-4 rounded-xl font-bold hover:bg-orange-600 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2",
-                                children: loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                                children: loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                             className: "animate-spin w-5 h-5",
                                             fill: "none",
                                             viewBox: "0 0 24 24",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
                                                     className: "opacity-25",
                                                     cx: "12",
                                                     cy: "12",
@@ -723,7 +280,7 @@ function TrackShipment() {
                                                     lineNumber: 127,
                                                     columnNumber: 19
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                     className: "opacity-75",
                                                     fill: "currentColor",
                                                     d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
@@ -752,15 +309,15 @@ function TrackShipment() {
                         lineNumber: 110,
                         columnNumber: 9
                     }, this),
-                    error && searched && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    error && searched && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "bg-red-50 border border-red-200 rounded-xl p-6 mb-8 text-center",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "w-12 h-12 text-red-400 mx-auto mb-4",
                                 fill: "none",
                                 stroke: "currentColor",
                                 viewBox: "0 0 24 24",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                     strokeLinecap: "round",
                                     strokeLinejoin: "round",
                                     strokeWidth: "2",
@@ -775,7 +332,7 @@ function TrackShipment() {
                                 lineNumber: 140,
                                 columnNumber: 13
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                 className: "text-red-600 font-medium",
                                 children: error
                             }, void 0, false, {
@@ -783,7 +340,7 @@ function TrackShipment() {
                                 lineNumber: 143,
                                 columnNumber: 13
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                 className: "text-red-400 text-sm mt-2",
                                 children: "Make sure you've entered the correct tracking number."
                             }, void 0, false, {
@@ -797,17 +354,17 @@ function TrackShipment() {
                         lineNumber: 139,
                         columnNumber: 11
                     }, this),
-                    shipment && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    shipment && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "animate-in fade-in slide-in-from-bottom-4 duration-500",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                             className: "bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                     className: "bg-brand-blue p-6 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                     className: "text-xs uppercase tracking-widest text-gray-400 font-bold mb-1",
                                                     children: "Tracking Number"
                                                 }, void 0, false, {
@@ -815,7 +372,7 @@ function TrackShipment() {
                                                     lineNumber: 153,
                                                     columnNumber: 19
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h2", {
                                                     className: "text-2xl font-mono font-bold",
                                                     children: shipment.tracking_number
                                                 }, void 0, false, {
@@ -829,9 +386,9 @@ function TrackShipment() {
                                             lineNumber: 152,
                                             columnNumber: 17
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "text-right",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                 className: `${getStatusColor(shipment.status)} px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider`,
                                                 children: shipment.status
                                             }, void 0, false, {
@@ -850,18 +407,18 @@ function TrackShipment() {
                                     lineNumber: 151,
                                     columnNumber: 15
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                     className: "p-8",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "grid grid-cols-1 md:grid-cols-2 gap-8 mb-8",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     className: "space-y-4",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                     className: "text-xs uppercase font-bold text-gray-400 mb-1",
                                                                     children: "Origin"
                                                                 }, void 0, false, {
@@ -869,7 +426,7 @@ function TrackShipment() {
                                                                     lineNumber: 167,
                                                                     columnNumber: 23
                                                                 }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                     className: "text-lg font-bold text-brand-blue",
                                                                     children: shipment.origin
                                                                 }, void 0, false, {
@@ -883,9 +440,9 @@ function TrackShipment() {
                                                             lineNumber: 166,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                     className: "text-xs uppercase font-bold text-gray-400 mb-1",
                                                                     children: "Last Update"
                                                                 }, void 0, false, {
@@ -893,7 +450,7 @@ function TrackShipment() {
                                                                     lineNumber: 171,
                                                                     columnNumber: 23
                                                                 }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                     className: "text-brand-gray-dark",
                                                                     children: formatDate(shipment.updated_at)
                                                                 }, void 0, false, {
@@ -913,12 +470,12 @@ function TrackShipment() {
                                                     lineNumber: 165,
                                                     columnNumber: 19
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     className: "space-y-4",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                     className: "text-xs uppercase font-bold text-gray-400 mb-1",
                                                                     children: "Destination"
                                                                 }, void 0, false, {
@@ -926,7 +483,7 @@ function TrackShipment() {
                                                                     lineNumber: 177,
                                                                     columnNumber: 23
                                                                 }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                     className: "text-lg font-bold text-brand-blue",
                                                                     children: shipment.destination
                                                                 }, void 0, false, {
@@ -940,9 +497,9 @@ function TrackShipment() {
                                                             lineNumber: 176,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                     className: "text-xs uppercase font-bold text-gray-400 mb-1",
                                                                     children: "Estimated Delivery"
                                                                 }, void 0, false, {
@@ -950,7 +507,7 @@ function TrackShipment() {
                                                                     lineNumber: 181,
                                                                     columnNumber: 23
                                                                 }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                     className: "text-lg font-bold text-brand-orange",
                                                                     children: shipment.estimated_delivery ? formatDate(shipment.estimated_delivery) : 'Calculating...'
                                                                 }, void 0, false, {
@@ -976,10 +533,10 @@ function TrackShipment() {
                                             lineNumber: 164,
                                             columnNumber: 17
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "pt-8 border-t border-gray-100",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
                                                     className: "text-sm font-bold text-brand-blue uppercase mb-6 tracking-widest",
                                                     children: "Shipment Progress"
                                                 }, void 0, false, {
@@ -987,17 +544,17 @@ function TrackShipment() {
                                                     lineNumber: 190,
                                                     columnNumber: 19
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     className: "relative mb-8",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             className: "absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-100 rounded-full"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/track-shipment.js",
                                                             lineNumber: 192,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             className: "absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-brand-orange rounded-full transition-all duration-500",
                                                             style: {
                                                                 width: `${getStatusProgress(shipment.status)}%`
@@ -1007,7 +564,7 @@ function TrackShipment() {
                                                             lineNumber: 193,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             className: "relative flex justify-between",
                                                             children: [
                                                                 'Pending',
@@ -1017,7 +574,7 @@ function TrackShipment() {
                                                                 'Delivered'
                                                             ].map((status, i)=>{
                                                                 const isActive = getStatusProgress(shipment.status) >= (i + 1) / 5 * 100;
-                                                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                                     className: `w-4 h-4 rounded-full border-4 border-white shadow-sm ${isActive ? 'bg-brand-orange ring-4 ring-orange-100' : 'bg-gray-200'}`
                                                                 }, status, false, {
                                                                     fileName: "[project]/pages/track-shipment.js",
@@ -1036,38 +593,38 @@ function TrackShipment() {
                                                     lineNumber: 191,
                                                     columnNumber: 19
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     className: "flex justify-between text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                             children: "Pending"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/track-shipment.js",
                                                             lineNumber: 207,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                             children: "Processing"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/track-shipment.js",
                                                             lineNumber: 208,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                             children: "In Transit"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/track-shipment.js",
                                                             lineNumber: 209,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                             children: "Out for Delivery"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/track-shipment.js",
                                                             lineNumber: 210,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                             children: "Delivered"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/track-shipment.js",
@@ -1086,10 +643,10 @@ function TrackShipment() {
                                             lineNumber: 189,
                                             columnNumber: 17
                                         }, this),
-                                        trackingUpdates.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        trackingUpdates.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "pt-8 mt-8 border-t border-gray-100",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
                                                     className: "text-sm font-bold text-brand-blue uppercase mb-6 tracking-widest",
                                                     children: "Tracking History"
                                                 }, void 0, false, {
@@ -1097,22 +654,22 @@ function TrackShipment() {
                                                     lineNumber: 217,
                                                     columnNumber: 21
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     className: "space-y-4",
-                                                    children: trackingUpdates.map((update, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    children: trackingUpdates.map((update, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             className: `flex gap-4 ${index === 0 ? 'opacity-100' : 'opacity-70'}`,
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                                     className: "flex flex-col items-center",
                                                                     children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                                             className: `w-3 h-3 rounded-full ${index === 0 ? 'bg-brand-orange' : 'bg-gray-300'}`
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/track-shipment.js",
                                                                             lineNumber: 222,
                                                                             columnNumber: 29
                                                                         }, this),
-                                                                        index < trackingUpdates.length - 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        index < trackingUpdates.length - 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                                             className: "w-0.5 h-full bg-gray-200 mt-1"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/track-shipment.js",
@@ -1125,10 +682,10 @@ function TrackShipment() {
                                                                     lineNumber: 221,
                                                                     columnNumber: 27
                                                                 }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                                     className: "flex-1 pb-4",
                                                                     children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                             className: "text-sm font-bold text-brand-blue",
                                                                             children: update.status
                                                                         }, void 0, false, {
@@ -1136,7 +693,7 @@ function TrackShipment() {
                                                                             lineNumber: 226,
                                                                             columnNumber: 29
                                                                         }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                             className: "text-sm text-gray-600",
                                                                             children: update.description
                                                                         }, void 0, false, {
@@ -1144,24 +701,24 @@ function TrackShipment() {
                                                                             lineNumber: 227,
                                                                             columnNumber: 29
                                                                         }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                                             className: "flex flex-wrap gap-2 text-xs text-gray-400 mt-1",
                                                                             children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                                                     children: update.location
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/track-shipment.js",
                                                                                     lineNumber: 229,
                                                                                     columnNumber: 31
                                                                                 }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                                                     children: "•"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/track-shipment.js",
                                                                                     lineNumber: 230,
                                                                                     columnNumber: 31
                                                                                 }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                                                     children: formatDate(update.occurrence_time)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/track-shipment.js",
@@ -1214,15 +771,15 @@ function TrackShipment() {
                         lineNumber: 149,
                         columnNumber: 11
                     }, this),
-                    searched && !shipment && !error && !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    searched && !shipment && !error && !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "bg-gray-50 border border-gray-200 rounded-xl p-8 text-center",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "w-16 h-16 text-gray-300 mx-auto mb-4",
                                 fill: "none",
                                 stroke: "currentColor",
                                 viewBox: "0 0 24 24",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                     strokeLinecap: "round",
                                     strokeLinejoin: "round",
                                     strokeWidth: "1.5",
@@ -1237,7 +794,7 @@ function TrackShipment() {
                                 lineNumber: 246,
                                 columnNumber: 13
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                 className: "text-gray-500 font-medium",
                                 children: "No results found"
                             }, void 0, false, {
@@ -1257,11 +814,11 @@ function TrackShipment() {
                 lineNumber: 104,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("footer", {
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("footer", {
                 className: "bg-brand-blue text-white py-8 mt-auto",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                     className: "max-w-7xl mx-auto px-4 text-center",
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                         className: "text-sm text-gray-400",
                         children: "© 2026 ParcelX. All rights reserved."
                     }, void 0, false, {
@@ -1286,42 +843,13 @@ function TrackShipment() {
         columnNumber: 5
     }, this);
 }
-_s(TrackShipment, "RXbYCLrYPw3VC51p1vHmqFy8Rx0=", false, function() {
-    return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
-    ];
-});
-_c = TrackShipment;
-var _c;
-__turbopack_context__.k.register(_c, "TrackShipment");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
 }),
-"[next]/entry/page-loader.ts { PAGE => \"[project]/pages/track-shipment.js [client] (ecmascript)\" } [client] (ecmascript)", ((__turbopack_context__, module, exports) => {
+"[externals]/next/dist/shared/lib/no-fallback-error.external.js [external] (next/dist/shared/lib/no-fallback-error.external.js, cjs)", ((__turbopack_context__, module, exports) => {
 
-const PAGE_PATH = "/track-shipment";
-(window.__NEXT_P = window.__NEXT_P || []).push([
-    PAGE_PATH,
-    ()=>{
-        return __turbopack_context__.r("[project]/pages/track-shipment.js [client] (ecmascript)");
-    }
-]);
-// @ts-expect-error module.hot exists
-if (module.hot) {
-    // @ts-expect-error module.hot exists
-    module.hot.dispose(function() {
-        window.__NEXT_P.push([
-            PAGE_PATH
-        ]);
-    });
-}
+const mod = __turbopack_context__.x("next/dist/shared/lib/no-fallback-error.external.js", () => require("next/dist/shared/lib/no-fallback-error.external.js"));
+
+module.exports = mod;
 }),
-"[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/pages/track-shipment\" }", ((__turbopack_context__) => {
-"use strict";
+];
 
-__turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/pages/track-shipment.js [client] (ecmascript)\" } [client] (ecmascript)");
-}),
-]);
-
-//# sourceMappingURL=%5Broot-of-the-server%5D__71795527._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__fc03a6a3._.js.map

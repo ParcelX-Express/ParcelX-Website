@@ -245,12 +245,15 @@ export default function Home() {
           ))}
           <div className="relative z-10 text-center px-4 w-full max-w-4xl">
             <h1 className="text-5xl md:text-7xl font-light text-white leading-tight tracking-tight drop-shadow-lg mb-12">
-              {heroSlides[currentSlide].title.split(', ').map((text, i) => (
-                <React.Fragment key={i}>
-                  {text}{i < heroSlides[currentSlide].title.split(', ').length - 1 && <><br />{i === 0 && 'manage, '}</>}
-                </React.Fragment>
-              ))}
-              {heroSlides[currentSlide].title === "Ship, manage, track, deliver" ? null : heroSlides[currentSlide].title}
+              {heroSlides[currentSlide].title === "Ship, manage, track, deliver" ? (
+                <>
+                  Ship<br />
+                  manage, track<br />
+                  deliver
+                </>
+              ) : (
+                heroSlides[currentSlide].title
+              )}
             </h1>
 
             {/* Redesigned Tracking Section - Moved inside Hero for better visibility or directly below */}
