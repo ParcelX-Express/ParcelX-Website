@@ -100,10 +100,10 @@ export default function Home() {
             <span className="text-3xl font-black tracking-tight">PARCEL<span className="text-brand-orange text-4xl">X</span></span>
           </Link>
           
-          <div className="flex items-center gap-4 md:gap-6">
-            <div className="hidden lg:flex items-center gap-4 border-r border-white/20 pr-6 mr-2">
-              <Link href="/signup" className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Sign Up</Link>
-              <Link href="/login" className="text-xs font-bold uppercase hover:text-brand-orange transition-colors">Log In</Link>
+          <div className="flex items-center gap-3 md:gap-6">
+            <div className="flex items-center gap-2 md:gap-4 border-r border-white/20 pr-3 md:pr-6 mr-1 md:mr-2">
+              <Link href="/signup" className="text-[10px] md:text-xs font-bold uppercase hover:text-brand-orange transition-colors bg-brand-orange hover:bg-orange-600 px-2 py-1 md:px-4 md:py-2 rounded">Sign Up</Link>
+              <Link href="/login" className="text-[10px] md:text-xs font-bold uppercase hover:text-brand-orange transition-colors border border-white/30 px-2 py-1 md:px-4 md:py-2 rounded hover:bg-white/10">Log In</Link>
             </div>
             <div className="relative">
               <button 

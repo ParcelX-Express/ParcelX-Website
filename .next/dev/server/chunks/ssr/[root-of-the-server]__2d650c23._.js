@@ -214,14 +214,14 @@ function Home() {
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-4 md:gap-6",
+                                className: "flex items-center gap-3 md:gap-6",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                        className: "hidden lg:flex items-center gap-4 border-r border-white/20 pr-6 mr-2",
+                                        className: "flex items-center gap-2 md:gap-4 border-r border-white/20 pr-3 md:pr-6 mr-1 md:mr-2",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                                                 href: "/signup",
-                                                className: "text-xs font-bold uppercase hover:text-brand-orange transition-colors",
+                                                className: "text-[10px] md:text-xs font-bold uppercase hover:text-brand-orange transition-colors bg-brand-orange hover:bg-orange-600 px-2 py-1 md:px-4 md:py-2 rounded",
                                                 children: "Sign Up"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/index.js",
@@ -230,7 +230,7 @@ function Home() {
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                                                 href: "/login",
-                                                className: "text-xs font-bold uppercase hover:text-brand-orange transition-colors",
+                                                className: "text-[10px] md:text-xs font-bold uppercase hover:text-brand-orange transition-colors border border-white/30 px-2 py-1 md:px-4 md:py-2 rounded hover:bg-white/10",
                                                 children: "Log In"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/index.js",

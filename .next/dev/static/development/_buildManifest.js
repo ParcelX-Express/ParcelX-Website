@@ -1,7 +1,4 @@
 self.__BUILD_MANIFEST = {
-  "/": [
-    "static/chunks/pages/index.js"
-  ],
   "__rewrites": {
     "afterFiles": [],
     "beforeFiles": [],
@@ -19,6 +16,7 @@ self.__BUILD_MANIFEST = {
     "/address-book",
     "/admin-tools",
     "/api/send-welcome-email",
+    "/api/track",
     "/billing",
     "/create-shipment",
     "/dashboard",
