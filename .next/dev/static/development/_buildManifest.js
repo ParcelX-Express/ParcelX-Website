@@ -9,11 +9,6 @@ self.__BUILD_MANIFEST = {
   },
   "sortedPages": [
     "/",
-    "/Dashboard",
-    "/Home",
-    "/Login",
-    "/Signup",
-    "/TrackShipment",
     "/_app",
     "/_error",
     "/address-book",

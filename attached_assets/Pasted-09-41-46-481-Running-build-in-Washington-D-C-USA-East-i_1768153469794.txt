@@ -1,0 +1,39 @@
+09:41:46.481 Running build in Washington, D.C., USA (East) – iad1
+09:41:46.482 Build machine configuration: 2 cores, 8 GB
+09:41:46.504 Cloning github.com/oaklineworkspace/parcelx-express (Branch: main, Commit: 3db245b)
+09:41:46.505 Skipping build cache, deployment was triggered without cache.
+09:41:50.037 Cloning completed: 3.533s
+09:41:50.437 Running "vercel build"
+09:41:50.855 Vercel CLI 50.1.6
+09:41:51.172 Installing dependencies...
+09:42:00.925 
+09:42:00.926 added 151 packages in 10s
+09:42:00.926 
+09:42:00.927 32 packages are looking for funding
+09:42:00.927   run `npm fund` for details
+09:42:00.996 Detected Next.js version: 16.1.1
+09:42:00.999 Running "npm run build"
+09:42:01.131 
+09:42:01.132 > parcelx-website@1.0.0 build
+09:42:01.132 > next build
+09:42:01.132 
+09:42:01.792 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+09:42:01.794 This information is used to shape Next.js' roadmap and prioritize features.
+09:42:01.794 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+09:42:01.794 https://nextjs.org/telemetry
+09:42:01.795 
+09:42:01.806 ▲ Next.js 16.1.1 (Turbopack)
+09:42:01.807 
+09:42:01.831   Running TypeScript ...
+09:42:01.891   Creating an optimized production build ...
+09:42:04.943 ✓ Compiled successfully in 2.8s
+09:42:04.944   Collecting page data using 1 worker ...
+09:42:05.275   Generating static pages using 1 worker (0/12) ...
+09:42:05.294 TypeError: Cannot destructure property 'basename' of 'i.useContext(...)' as it is null.
+09:42:05.294     at ignore-listed frames
+09:42:05.297 Error occurred prerendering page "/Dashboard". Read more: https://nextjs.org/docs/messages/prerender-error
+09:42:05.298 TypeError: Cannot destructure property 'basename' of 'i.useContext(...)' as it is null.
+09:42:05.298     at ignore-listed frames
+09:42:05.299 Export encountered an error on /Dashboard, exiting the build.
+09:42:05.310 ⨯ Next.js build worker exited with code: 1 and signal: null
+09:42:05.342 Error: Command "npm run build" exited with 1
