@@ -1,0 +1,39 @@
+11:13:41.288 Running build in Washington, D.C., USA (East) – iad1
+11:13:41.295 Build machine configuration: 2 cores, 8 GB
+11:13:41.590 Cloning github.com/oaklineworkspace/parcelx-express (Branch: main, Commit: 3db245b)
+11:13:41.591 Previous build caches not available.
+11:13:50.529 Cloning completed: 8.939s
+11:13:51.079 Running "vercel build"
+11:13:51.501 Vercel CLI 50.1.6
+11:13:52.102 Installing dependencies...
+11:14:02.478 
+11:14:02.479 added 151 packages in 10s
+11:14:02.480 
+11:14:02.480 32 packages are looking for funding
+11:14:02.480   run `npm fund` for details
+11:14:02.535 Detected Next.js version: 16.1.1
+11:14:02.538 Running "npm run build"
+11:14:02.639 
+11:14:02.640 > parcelx-website@1.0.0 build
+11:14:02.640 > next build
+11:14:02.640 
+11:14:03.294 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+11:14:03.295 This information is used to shape Next.js' roadmap and prioritize features.
+11:14:03.295 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+11:14:03.295 https://nextjs.org/telemetry
+11:14:03.296 
+11:14:03.309 ▲ Next.js 16.1.1 (Turbopack)
+11:14:03.310 
+11:14:03.336   Running TypeScript ...
+11:14:03.400   Creating an optimized production build ...
+11:14:06.959 ✓ Compiled successfully in 3.2s
+11:14:06.961   Collecting page data using 1 worker ...
+11:14:07.305   Generating static pages using 1 worker (0/12) ...
+11:14:07.325 TypeError: Cannot destructure property 'basename' of 'i.useContext(...)' as it is null.
+11:14:07.326     at ignore-listed frames
+11:14:07.330 Error occurred prerendering page "/Home". Read more: https://nextjs.org/docs/messages/prerender-error
+11:14:07.330 TypeError: Cannot destructure property 'basename' of 'i.useContext(...)' as it is null.
+11:14:07.331     at ignore-listed frames
+11:14:07.331 Export encountered an error on /Home, exiting the build.
+11:14:07.344 ⨯ Next.js build worker exited with code: 1 and signal: null
+11:14:07.382 Error: Command "npm run build" exited with 1
